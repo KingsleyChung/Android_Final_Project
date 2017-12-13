@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Final_Project</string>
+    <string name="profile">PROFILE</string>
+    <string name="feed">FEED</string>
+    <string name="activity">ACTIVITY</string>
+    <string name="settings">SETTINGS</string>
 </resources>
