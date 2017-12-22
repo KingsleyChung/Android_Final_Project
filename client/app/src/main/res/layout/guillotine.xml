@@ -17,7 +17,7 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/profile_group"
+        android:id="@+id/map_group"
         style="@style/LinearLayout.GuillotineItem"
         android:layout_marginTop="@dimen/guillotine_medium_margin">
 
@@ -25,33 +25,33 @@
             style="@style/ImageView.GuillotineItem"
             android:src="@drawable/ic_profile" />
 
-        <cn.kingsleychung.final_project.CanaroTextView
+        <cn.kingsleychung.final_project.Other.CanaroTextView
             style="@style/TextView.GuillotineItem"
             android:text="@string/profile" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/feed_group"
+        android:id="@+id/task_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
             style="@style/ImageView.GuillotineItem"
             android:src="@drawable/ic_feed" />
 
-        <cn.kingsleychung.final_project.CanaroTextView
+        <cn.kingsleychung.final_project.Other.CanaroTextView
             style="@style/TextView.GuillotineItem"
             android:text="@string/feed" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/activity_group"
+        android:id="@+id/profile_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
             style="@style/ImageView.GuillotineItem"
             android:src="@drawable/ic_activity_active" />
 
-        <cn.kingsleychung.final_project.CanaroTextView
+        <cn.kingsleychung.final_project.Other.CanaroTextView
             style="@style/TextView.GuillotineItem.Selected"
             android:text="@string/app_name" />
     </LinearLayout>
@@ -61,14 +61,14 @@
         <!--android:layout_height="@dimen/guillotine_divider_height" />-->
 
     <LinearLayout
-        android:id="@+id/settings_group"
+        android:id="@+id/setting_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
             style="@style/ImageView.GuillotineItem"
             android:src="@drawable/ic_settings" />
 
-        <cn.kingsleychung.final_project.CanaroTextView
+        <cn.kingsleychung.final_project.Other.CanaroTextView
             style="@style/TextView.GuillotineItem"
             android:text="@string/settings" />
     </LinearLayout>
