@@ -17,7 +17,7 @@
     </android.support.v7.widget.Toolbar>
 
     <LinearLayout
-        android:id="@+id/profile_group"
+        android:id="@+id/map_group"
         style="@style/LinearLayout.GuillotineItem"
         android:layout_marginTop="@dimen/guillotine_medium_margin">
 
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/feed_group"
+        android:id="@+id/task_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
@@ -44,7 +44,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/activity_group"
+        android:id="@+id/profile_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
@@ -61,7 +61,7 @@
         <!--android:layout_height="@dimen/guillotine_divider_height" />-->
 
     <LinearLayout
-        android:id="@+id/settings_group"
+        android:id="@+id/setting_group"
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView

@@ -36,11 +36,10 @@
                 android:textSize="@dimen/guillotine_item_text_size" />
         </android.support.v7.widget.Toolbar>
 
-        <TextView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="地图"
-            android:textSize="60sp"
-            android:gravity="center"/>
+            android:id="@+id/content_fragment"/>
+
     </LinearLayout>
 </FrameLayout>
