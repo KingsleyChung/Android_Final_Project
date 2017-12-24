@@ -3,10 +3,16 @@ package cn.kingsleychung.final_project;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,12 +22,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+
+import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.UserManagement;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final long RIPPLE_DURATION = 0;
@@ -34,6 +46,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout map, task, profile, setting;
     View guillotineMenu;
 
+    //服务
+    private IBinder mBinder;
+    private ServiceConnection mConnection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initPermission();
         initClickListener();
 
+        /*测试用*/
+        //UserManagement.getInstance().getTask("5a3e6fd7d6028c09d1f75da3", SubscriberManagement.getTaskSubscriber(this));
+        //UserManagement.getInstance().getUserInformation("1", SubscriberManagement.getUserSubscriber(this));
+
+        //initService();
+        //startService(); 服务的启动要在用户登录之后，不能紧跟初始化服务之后
     }
 
     private void initViews() {
@@ -94,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-
         switch (v.getId()) {
             case R.id.map_group:
                 if (mapFragment == null) mapFragment = new MapFragment();
@@ -163,4 +184,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
     }
+
+    void initService() {
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mBinder = service;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mConnection = null;
+            }
+        };
+        Intent mIntent = new Intent(this,PollingService.class);
+        startService(mIntent);
+        bindService(mIntent,mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    void startService() {
+        try{
+            int code = 1;
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            mBinder.transact(code,data,reply,0);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        unbindService(mConnection);
+        super.onDestroy();
+    }
+
 }
