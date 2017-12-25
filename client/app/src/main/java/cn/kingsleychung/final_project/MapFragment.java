@@ -1,30 +1,26 @@
 package cn.kingsleychung.final_project;
 
-import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMapOptions;
 import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 
 /**
@@ -119,6 +115,51 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mUiSettings.setZoomControlsEnabled(false);
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_CENTER);
+
+        //testing
+        LatLng latLng = new LatLng(23.058324,113.390167);
+        final Marker marker = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.048324,113.398167)).title("广州").snippet("DefaultMarker"));
+        final Marker marker1 = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.058324,113.390167)).title("广州1").snippet("DefaultMarker"));
+        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public View getInfoWindow(Marker marker) {
+                View infoContent = getLayoutInflater().inflate(
+                        R.layout.task, null);
+                //render(marker, infoContent);
+                return infoContent;
+            }
+
+            @TargetApi(Build.VERSION_CODES.O)
+            @Override
+            public View getInfoContents(Marker marker) {
+                View infoContent = getLayoutInflater().inflate(
+                        R.layout.task, null);
+                //render(marker, infoContent);
+                return infoContent;
+            }
+        });
+
+        mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                marker.showInfoWindow();
+                System.out.println("Marker has been clicked.");
+                return  true;
+            }
+        });
+        mAMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
+            @Override
+            public void onCameraChange(CameraPosition cameraPosition) {
+
+            }
+
+            @Override
+            public void onCameraChangeFinish(CameraPosition cameraPosition) {
+                LatLng center = cameraPosition.target;
+                System.out.println(center.latitude + "   " + center.longitude);
+            }
+        });
     }
 
 }

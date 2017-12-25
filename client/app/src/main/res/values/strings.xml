@@ -4,4 +4,17 @@
     <string name="feed">FEED</string>
     <string name="activity">ACTIVITY</string>
     <string name="settings">SETTINGS</string>
+    <string name="signin">Sign In</string>
+    <string name="signup">Sign Up</string>
+    <string name="register">Register</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="confirmPassword">Confirm Password</string>
+    <string name="email">Email</string>
+    <string name="phoneNo">Phone No.</string>
+    <string name="emptyusername">Username cannot be empty</string>
+    <string name="emptypassword">Password cannot be empty</string>
+    <string name="mismatch">The two password are mismatch</string>
+    <string name="emptyemail">Email cannot be empty</string>
+    <string name="emptyphoneno">Phone No. cannot be empty</string>
 </resources>
