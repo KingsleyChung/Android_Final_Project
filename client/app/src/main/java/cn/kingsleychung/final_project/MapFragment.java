@@ -120,25 +120,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         LatLng latLng = new LatLng(23.058324,113.390167);
         final Marker marker = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.048324,113.398167)).title("广州").snippet("DefaultMarker"));
         final Marker marker1 = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.058324,113.390167)).title("广州1").snippet("DefaultMarker"));
-        mAMap.setInfoWindowAdapter(new AMap.InfoWindowAdapter() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public View getInfoWindow(Marker marker) {
-                View infoContent = getLayoutInflater().inflate(
-                        R.layout.task, null);
-                //render(marker, infoContent);
-                return infoContent;
-            }
-
-            @TargetApi(Build.VERSION_CODES.O)
-            @Override
-            public View getInfoContents(Marker marker) {
-                View infoContent = getLayoutInflater().inflate(
-                        R.layout.task, null);
-                //render(marker, infoContent);
-                return infoContent;
-            }
-        });
 
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -148,6 +129,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                 return  true;
             }
         });
+
         mAMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {

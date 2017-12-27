@@ -13,7 +13,16 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.UserManagement;
+import rx.Subscriber;
 
 /**
  * Created by Kings on 2017/12/23.
@@ -29,6 +38,8 @@ public class SigninSignup extends Activity {
     private TextInputLayout mSigninUsernameLayout, mSigninPasswordLayout, mSignupUsernameLayout, mSignupPasswordLayout, mSignupConfirmPasswordLayout, mSignupEmailLayout, mSignupPhoneNoLayout;
     private ImageView mIcon;
     private Button mSignin, mSigninRegister, mSignupRegister, mCancel;
+    private ProgressBar mProgress;
+    private UserManagement mUserManagement;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,15 +48,18 @@ public class SigninSignup extends Activity {
 
         mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
+        System.out.println(mSharedPreferences.getString("username", null));
+        System.out.println(mSharedPreferences.getString("password", null));
         initStatus();
     }
 
     private void initStatus() {
-        if (mSharedPreferences.getString("password", null) == null) {
+        if (mSharedPreferences.getString("username", null) != null && mSharedPreferences.getString("password", null) != null) {
+            login(mSharedPreferences.getString("username", null), mSharedPreferences.getString("password", null));
+        } else {
             initView();
             initClickListener();
-        } else {
-            enterApp();
+            initInputListener();
         }
     }
 
@@ -78,8 +92,14 @@ public class SigninSignup extends Activity {
         mSigninRegister = findViewById(R.id.signin_register_btn);
         mSignupRegister = findViewById(R.id.signup_register_btn);
         mCancel = findViewById(R.id.signup_cancel_btn);
-        showSignin();
-        hideSignup();
+        mProgress = findViewById(R.id.signin_signup_progress);
+
+        initEditTextErrorMessage();
+
+        mUserManagement = UserManagement.getInstance();
+        setSigninVisibility(View.VISIBLE);
+        setSignupVisibility(View.INVISIBLE);
+        stopWaiting();
     }
 
     private void initClickListener() {
@@ -95,20 +115,9 @@ public class SigninSignup extends Activity {
             public void onClick(View v) {
                 String inputUsername = mSigninUsername.getText().toString();
                 String inputPassword = mSigninPassword.getText().toString();
-                boolean check = true;
-                if (inputUsername.equals("")) {
-                    mSigninUsernameLayout.setError(getResources().getText(R.string.emptyusername));
-                    check = false;
-                }
-                if (inputPassword.equals("")) {
-                    mSigninPasswordLayout.setError(getResources().getText(R.string.emptypassword));
-                    check = false;
-                }
-                if (check && authenticateAccount(inputUsername, inputPassword)) {
-                    mEditor.putString("username", inputUsername);
-                    mEditor.putString("password", inputPassword);
-                    mEditor.commit();
-                    enterApp();
+
+                if (checkUsername(mSigninUsername) == 1 && checkPassword(mSigninPassword) == 1) {
+                    login(inputUsername, inputPassword);
                 }
             }
         });
@@ -116,8 +125,8 @@ public class SigninSignup extends Activity {
         mSigninRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSignin();
-                showSignup();
+                setSigninVisibility(View.INVISIBLE);
+                setSignupVisibility(View.VISIBLE);
             }
         });
 
@@ -126,35 +135,39 @@ public class SigninSignup extends Activity {
             public void onClick(View v) {
                 String inputUsername = mSignupUsername.getText().toString();
                 String inputPassword = mSignupPassword.getText().toString();
-                String inputConfirmPassword = mSignupConfirmPassword.getText().toString();
                 String inputEmail = mSignupEmail.getText().toString();
                 String inputPhoneNo = mSignupPhoneNo.getText().toString();
-                boolean check = true;
-                if (inputUsername.equals("")) {
-                    mSignupUsernameLayout.setError(getResources().getText(R.string.emptyusername));
-                    check = false;
-                }
-                if (inputPassword.equals("")) {
-                    mSignupPasswordLayout.setError(getResources().getText(R.string.emptypassword));
-                    check = false;
-                }
-                if (inputConfirmPassword.equals("")) {
-                    mSignupConfirmPasswordLayout.setError(getResources().getText(R.string.emptypassword));
-                    check = false;
-                }
-                if (inputEmail.equals("")) {
-                    mSignupEmailLayout.setError(getResources().getText(R.string.emptyemail));
-                    check = false;
-                }
-                if (inputPhoneNo.equals("")) {
-                    mSignupPhoneNoLayout.setError(getResources().getText(R.string.emptyphoneno));
-                    check = false;
-                }
-                if (check && registerAccount(inputUsername, inputPassword, inputEmail, inputPhoneNo)) {
-                    mEditor.putString("username", inputUsername);
-                    mEditor.putString("password", inputPassword);
-                    mEditor.commit();
-                    enterApp();
+                if (registerCheck()) {
+                    Subscriber<UserClass> registerSubscriber = (new Subscriber<UserClass>() {
+                        @Override
+                        public void onCompleted() {
+                            stopWaiting();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNext(UserClass user) {
+                            //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
+                            UserManagement.getInstance().storeUser(user);
+                            if (user.getSuccess()) {
+                                mEditor.putString("username", user.getUserName());
+                                mEditor.putString("password", user.getPassword());
+                                mEditor.commit();
+                                login(user.getUserName(), user.getPassword());
+                            } else {
+                                Toast.makeText(SigninSignup.this, user.getMessage(),Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null);
+                    waiting();
+                    mUserManagement.register(newUser, registerSubscriber);
+                } else {
+                    Toast.makeText(SigninSignup.this, getString(R.string.inputvalidinfo), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -162,73 +175,248 @@ public class SigninSignup extends Activity {
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                hideSignup();
-                showSignin();
+                initEditTextErrorMessage();
+                setSignupVisibility(View.INVISIBLE);
+                setSigninVisibility(View.VISIBLE);
             }
         });
     }
 
-    private boolean authenticateAccount(String username, String password) {
-        //联网验证用户名和密码
-        return false;
+    private void initInputListener() {
+        mSigninUsername.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSigninUsernameLayout.setError("");
+                } else {
+                    if (checkUsername(mSigninUsername) == 0) {
+                        mSigninUsernameLayout.setError(getResources().getText(R.string.emptyusername));
+                    }
+                    else if (checkUsername(mSigninUsername) == 2) {
+                        mSigninUsernameLayout.setError(getResources().getText(R.string.invalidusername));
+                    }
+                }
+            }
+        });
+
+        mSigninPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSigninPasswordLayout.setError("");
+                } else {
+                    if (checkPassword(mSigninPassword) == 0) {
+                        mSigninPasswordLayout.setError(getResources().getText(R.string.emptypassword));
+                    };
+                }
+            }
+        });
+
+        mSignupUsername.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSignupUsernameLayout.setError("");
+                } else {
+                    if (checkUsername(mSignupUsername) == 0) {
+                        mSignupUsernameLayout.setError(getResources().getText(R.string.emptyusername));
+                    }
+                    else if (checkUsername(mSignupUsername) == 2) {
+                        mSignupUsernameLayout.setError(getResources().getText(R.string.invalidusername));
+                    }
+                }
+            }
+        });
+
+        mSignupPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSignupPasswordLayout.setError("");
+                } else {
+                    if (checkUsername(mSignupPassword) == 0) {
+                        mSignupPasswordLayout.setError(getResources().getText(R.string.emptypassword));
+                    }
+                    else if (checkConfirmPassword() == 1) {
+                        mSignupConfirmPasswordLayout.setError("");
+                    }
+                }
+            }
+        });
+
+        mSignupConfirmPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSignupConfirmPasswordLayout.setError("");
+                } else {
+                    if (checkConfirmPassword() == 0) {
+                        mSignupConfirmPasswordLayout.setError(getResources().getText(R.string.emptypassword));
+                    }
+                    else if (checkConfirmPassword() == 2) {
+                        mSignupConfirmPasswordLayout.setError(getResources().getText(R.string.mismatch));
+                    }
+                }
+            }
+        });
+
+        mSignupEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSignupEmailLayout.setError("");
+                } else {
+                    if (checkEmail() == 0) {
+                        mSignupEmailLayout.setError(getResources().getText(R.string.emptyemail));
+                    }
+                    else if (checkEmail() == 2) {
+                        mSignupEmailLayout.setError(getResources().getText(R.string.invalidemail));
+                    }
+                }
+            }
+        });
+
+        mSignupPhoneNo.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    mSignupPhoneNoLayout.setError("");
+                } else {
+                    if (checkPhoneNo() == 0) {
+                        mSignupPhoneNoLayout.setError(getResources().getText(R.string.emptyphoneno));
+                    }
+                    else if (checkPhoneNo() == 2) {
+                        mSignupPhoneNoLayout.setError(getResources().getText(R.string.invalidphoneno));
+                    }
+                }
+            }
+        });
     }
 
-    private boolean registerAccount(String username, String password, String email, String phoneNo) {
-        //联网注册用户
-        return false;
+    private void initEditTextErrorMessage() {
+        mSigninUsernameLayout.setError("");
+        mSigninPasswordLayout.setError("");
+        mSignupUsernameLayout.setError("");
+        mSignupPasswordLayout.setError("");
+        mSignupConfirmPasswordLayout.setError("");
+        mSignupEmailLayout.setError("");
+        mSignupPhoneNoLayout.setError("");
     }
 
-    private void hideSignin() {
-        mSigninTitle.setVisibility(View.INVISIBLE);
-        mSigninUsername.setVisibility(View.INVISIBLE);
-        mSigninPassword.setVisibility(View.INVISIBLE);
-        mSigninUsernameLayout.setVisibility(View.INVISIBLE);
-        mSigninPasswordLayout.setVisibility(View.INVISIBLE);
-        mSigninRegister.setVisibility(View.INVISIBLE);
-        mSignin.setVisibility(View.INVISIBLE);
+    private void login(String username, String password) {
+        Subscriber<UserClass> loginSubscriber = (new Subscriber<UserClass>() {
+            @Override
+            public void onCompleted() {
+                stopWaiting();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(UserClass user) {
+                //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
+                UserManagement.getInstance().storeUser(user);
+                if (user.getSuccess()) {
+                    mEditor.putString("username", user.getUserName());
+                    mEditor.putString("password", user.getPassword());
+                    mEditor.commit();
+                    enterApp();
+                } else {
+                    Toast.makeText(SigninSignup.this, R.string.wrongusernameorpassword,Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        waiting();
+        mUserManagement.login(username, password, loginSubscriber);
     }
 
-    private void showSignin() {
-        mSigninTitle.setVisibility(View.VISIBLE);
-        mSigninUsername.setVisibility(View.VISIBLE);
-        mSigninPassword.setVisibility(View.VISIBLE);
-        mSigninUsernameLayout.setVisibility(View.VISIBLE);
-        mSigninPasswordLayout.setVisibility(View.VISIBLE);
-        mSigninRegister.setVisibility(View.VISIBLE);
-        mSignin.setVisibility(View.VISIBLE);
+    private int checkUsername(EditText usernameInput) {
+        String username = usernameInput.getText().toString();
+        if (username.equals("")) return 0;
+        if (username.contains(" ")) return 2;
+        return 1;
     }
 
-    private void hideSignup() {
-        mSignupTitle.setVisibility(View.INVISIBLE);
-        mIcon.setVisibility(View.INVISIBLE);
-        mSignupUsername.setVisibility(View.INVISIBLE);
-        mSignupPassword.setVisibility(View.INVISIBLE);
-        mSignupConfirmPassword.setVisibility(View.INVISIBLE);
-        mSignupPhoneNo.setVisibility(View.INVISIBLE);
-        mSignupEmail.setVisibility(View.INVISIBLE);
-        mSignupUsernameLayout.setVisibility(View.INVISIBLE);
-        mSignupPasswordLayout.setVisibility(View.INVISIBLE);
-        mSignupConfirmPasswordLayout.setVisibility(View.INVISIBLE);
-        mSignupPhoneNoLayout.setVisibility(View.INVISIBLE);
-        mSignupEmailLayout.setVisibility(View.INVISIBLE);
-        mSignupRegister.setVisibility(View.INVISIBLE);
-        mCancel.setVisibility(View.INVISIBLE);
+    private int checkPassword(EditText passwordInput) {
+        String password = passwordInput.getText().toString();
+        if (password.equals("")) return 0;
+        return 1;
     }
 
-    private void showSignup() {
-        mSignupTitle.setVisibility(View.VISIBLE);
-        mIcon.setVisibility(View.VISIBLE);
-        mSignupUsername.setVisibility(View.VISIBLE);
-        mSignupPassword.setVisibility(View.VISIBLE);
-        mSignupConfirmPassword.setVisibility(View.VISIBLE);
-        mSignupPhoneNo.setVisibility(View.VISIBLE);
-        mSignupEmail.setVisibility(View.VISIBLE);
-        mSignupUsernameLayout.setVisibility(View.VISIBLE);
-        mSignupPasswordLayout.setVisibility(View.VISIBLE);
-        mSignupConfirmPasswordLayout.setVisibility(View.VISIBLE);
-        mSignupPhoneNoLayout.setVisibility(View.VISIBLE);
-        mSignupEmailLayout.setVisibility(View.VISIBLE);
-        mSignupRegister.setVisibility(View.VISIBLE);
-        mCancel.setVisibility(View.VISIBLE);
+    private int checkConfirmPassword() {
+        String confirmPassword = mSignupConfirmPassword.getText().toString();
+        if (confirmPassword.equals("")) return 0;
+        if (!confirmPassword.equals(mSignupPassword.getText().toString())) return 2;
+        return 1;
+    }
+
+    private int checkPhoneNo() {
+        String phoneNo = mSignupPhoneNo.getText().toString();
+        if (phoneNo.equals("")) return 0;
+        Pattern p = Pattern.compile("/13[123569]{1}\\d{8}|15[1235689]\\d{8}|188\\d{8}/");
+        Matcher m = p.matcher(phoneNo);
+        if (!m.matches()) return 2;
+        return 1;
+    }
+
+    private int checkEmail() {
+        String email = mSignupEmail.getText().toString();
+        if (email.equals("")) return 0;
+        Pattern p = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
+        Matcher m = p.matcher(email);
+        if (!m.matches()) return 2;
+        return 1;
+    }
+
+    private boolean registerCheck() {
+        mSignupUsername.requestFocus();
+        mSignupPassword.requestFocus();
+        mSignupConfirmPassword.requestFocus();
+        mSignupPhoneNo.requestFocus();
+        mSignupEmail.requestFocus();
+        mSignupEmail.clearFocus();
+
+        if (checkUsername(mSignupUsername) == 1 && checkPassword(mSignupPassword) == 1 && checkConfirmPassword() == 1 && checkEmail() == 1 && checkPhoneNo() == 1)
+            return true;
+        else
+            return false;
+    }
+
+    private void setSigninVisibility(int visibility) {
+        mSigninTitle.setVisibility(visibility);
+        mSigninUsername.setVisibility(visibility);
+        mSigninPassword.setVisibility(visibility);
+        mSigninUsernameLayout.setVisibility(visibility);
+        mSigninPasswordLayout.setVisibility(visibility);
+        mSigninRegister.setVisibility(visibility);
+        mSignin.setVisibility(visibility);
+    }
+
+    private void setSignupVisibility(int visibility) {
+        mSignupTitle.setVisibility(visibility);
+        mIcon.setVisibility(visibility);
+        mSignupUsername.setVisibility(visibility);
+        mSignupPassword.setVisibility(visibility);
+        mSignupConfirmPassword.setVisibility(visibility);
+        mSignupPhoneNo.setVisibility(visibility);
+        mSignupEmail.setVisibility(visibility);
+        mSignupUsernameLayout.setVisibility(visibility);
+        mSignupPasswordLayout.setVisibility(visibility);
+        mSignupConfirmPasswordLayout.setVisibility(visibility);
+        mSignupPhoneNoLayout.setVisibility(visibility);
+        mSignupEmailLayout.setVisibility(visibility);
+        mSignupRegister.setVisibility(visibility);
+        mCancel.setVisibility(visibility);
+    }
+
+    private void stopWaiting() {
+        mProgress.setVisibility(View.GONE);
+    }
+
+    private void waiting() {
+        mProgress.setVisibility(View.VISIBLE);
     }
 }

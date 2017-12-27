@@ -33,11 +33,14 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/signin_username_input" />
+            android:id="@+id/signin_username_input"
+            android:lines="1"
+            android:singleLine="true"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -51,11 +54,15 @@
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:visibility="invisible">
+        android:visibility="invisible"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/signin_password_input" />
+            android:lines="1"
+            android:singleLine="true"
+            android:id="@+id/signin_password_input"
+            android:inputType="textPassword"/>
     </android.support.design.widget.TextInputLayout>
 
     <Button
@@ -117,12 +124,14 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/signup_icon"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="20dp"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signup_username_input"
             android:lines="1"
+            android:singleLine="true"
             android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -137,12 +146,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signup_password_input"
             android:lines="1"
+            android:singleLine="true"
+            android:inputType="textPassword"
             android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -156,12 +168,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signup_confirmPassword_input"
             android:lines="1"
+            android:singleLine="true"
+            android:inputType="textPassword"
             android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -175,12 +190,15 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signup_phoneNo_input"
             android:lines="1"
+            android:singleLine="true"
+            android:inputType="number"
             android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -194,12 +212,14 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        app:errorEnabled="true">
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/signup_email_input"
             android:lines="1"
+            android:singleLine="true"
             android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
@@ -221,9 +241,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/signup_cancel_btn"
-        android:text="@string/register"
+        android:text="@string/cancel"
         app:layout_constraintTop_toTopOf="@id/signup_register_btn"
         app:layout_constraintLeft_toRightOf="@id/signup_register_btn"
         app:layout_constraintRight_toRightOf="parent"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/signin_signup_progress"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone"/>
 
 </android.support.constraint.ConstraintLayout>

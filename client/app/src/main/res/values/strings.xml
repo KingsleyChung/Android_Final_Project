@@ -15,6 +15,13 @@
     <string name="emptyusername">Username cannot be empty</string>
     <string name="emptypassword">Password cannot be empty</string>
     <string name="mismatch">The two password are mismatch</string>
+    <string name="invalidemail">Invalid email</string>
+    <string name="invalidphoneno">Invalid phone no.</string>
+    <string name="networkerror">网络出错，请检查您的网络连接！</string>
+    <string name="wrongusernameorpassword">Wrong username/password.</string>
+    <string name="cancel">CANCEL</string>
+    <string name="inputvalidinfo">Please input valid infomation.</string>
+    <string name="invalidusername">Invalid username</string>
     <string name="emptyemail">Email cannot be empty</string>
-    <string name="emptyphoneno">Phone No. cannot be empty</string>
+    <string name="emptyphoneno">Phone no. cannot be empty.</string>
 </resources>
