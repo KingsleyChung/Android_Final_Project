@@ -35,6 +35,28 @@ public class SubscriberManagement {
         return temp;
     }
 
+    public static Subscriber<UserClass> getUserLoginSubscriber(final Context context) {
+        Subscriber<UserClass> temp = (new Subscriber<UserClass>() {
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Toast.makeText(context,"网络出错，请检查您的网络连接！",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(UserClass user) {
+                //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
+                UserManagement.getInstance().storeUser(user);
+
+
+            }
+        });
+        return temp;
+    }
+
     public static Subscriber<Task> getTaskSubscriber(final Context context) {
         Subscriber<Task> temp = (new Subscriber<Task>() {
             @Override

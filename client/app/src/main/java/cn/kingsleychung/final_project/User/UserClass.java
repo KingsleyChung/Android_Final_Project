@@ -123,6 +123,8 @@ public class UserClass {
         return userName;
     }
 
+    public String getPassword() { return password; }
+
     public String getNickName() {
         return nickName;
     }
