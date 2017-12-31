@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.ResponseUser;
+import cn.kingsleychung.final_project.User.ResponseUser;
 import cn.kingsleychung.final_project.User.UserManagement;
+import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final long RIPPLE_DURATION = 0;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        temp2.add("5a45c5a148b3173902c97750");
 //        Task task = new Task("5a45c59948b3173902c9774e", "zhougb3text","laji", "suse", "house", 11.5,true, temp, temp2, new double[] {12,12}, new double[] {13,13},"2015-01-12 06:51:20");
 //        UserManagement.getInstance().addTask(task, SubscriberManagement.getUserSubscriber(this));
-
+//        UserManagement.getInstance().login("1429", "1429",loginSubscriber);
         //initService();
         //startService(); 服务的启动要在用户登录之后，不能紧跟初始化服务之后
     }

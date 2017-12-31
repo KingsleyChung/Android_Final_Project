@@ -20,7 +20,7 @@ import android.widget.Toast;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.ResponseUser;
 import cn.kingsleychung.final_project.User.UserManagement;
 import rx.Subscriber;
 
@@ -54,10 +54,10 @@ public class SigninSignup extends Activity {
     }
 
     private void initStatus() {
+        initView();
         if (mSharedPreferences.getString("username", null) != null && mSharedPreferences.getString("password", null) != null) {
             login(mSharedPreferences.getString("username", null), mSharedPreferences.getString("password", null));
         } else {
-            initView();
             initClickListener();
             initInputListener();
         }
@@ -138,7 +138,7 @@ public class SigninSignup extends Activity {
                 String inputEmail = mSignupEmail.getText().toString();
                 String inputPhoneNo = mSignupPhoneNo.getText().toString();
                 if (registerCheck()) {
-                    Subscriber<UserClass> registerSubscriber = (new Subscriber<UserClass>() {
+                    Subscriber<ResponseUser> registerSubscriber = (new Subscriber<ResponseUser>() {
                         @Override
                         public void onCompleted() {
                             stopWaiting();
@@ -147,23 +147,21 @@ public class SigninSignup extends Activity {
                         @Override
                         public void onError(Throwable e) {
                             Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                            stopWaiting();
                         }
 
                         @Override
-                        public void onNext(UserClass user) {
+                        public void onNext(ResponseUser user) {
                             //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
-                            UserManagement.getInstance().storeUser(user);
+                            UserManagement.getInstance().storeResponseUser(user);
                             if (user.getSuccess()) {
-                                mEditor.putString("username", user.getUserName());
-                                mEditor.putString("password", user.getPassword());
-                                mEditor.commit();
-                                login(user.getUserName(), user.getPassword());
+                                login(user.getUser().getUserName(), user.getUser().getPassword());
                             } else {
                                 Toast.makeText(SigninSignup.this, user.getMessage(),Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null);
+                    ResponseUser newUser = new ResponseUser(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null);
                     waiting();
                     mUserManagement.register(newUser, registerSubscriber);
                 } else {
@@ -304,7 +302,7 @@ public class SigninSignup extends Activity {
     }
 
     private void login(String username, String password) {
-        Subscriber<UserClass> loginSubscriber = (new Subscriber<UserClass>() {
+        Subscriber<ResponseUser> loginSubscriber = (new Subscriber<ResponseUser>() {
             @Override
             public void onCompleted() {
                 stopWaiting();
@@ -313,16 +311,19 @@ public class SigninSignup extends Activity {
             @Override
             public void onError(Throwable e) {
                 Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                stopWaiting();
             }
 
             @Override
-            public void onNext(UserClass user) {
+            public void onNext(ResponseUser user) {
                 //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
-                UserManagement.getInstance().storeUser(user);
+                UserManagement.getInstance().storeResponseUser(user);
                 if (user.getSuccess()) {
-                    mEditor.putString("username", user.getUserName());
-                    mEditor.putString("password", user.getPassword());
+                    mEditor.putString("username", user.getUser().getUserName());
+                    mEditor.putString("password", user.getUser().getPassword());
                     mEditor.commit();
+                    System.out.println(mSharedPreferences.getString("username", null));
+                    System.out.println(mSharedPreferences.getString("password", null));
                     enterApp();
                 } else {
                     Toast.makeText(SigninSignup.this, R.string.wrongusernameorpassword,Toast.LENGTH_SHORT).show();

@@ -1,10 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/map_fragment"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:alpha="0"
+        android:id="@+id/dim"
+        android:fitsSystemWindows="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dimBackground" />
 
     <com.amap.api.maps2d.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map_display"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:id="@+id/drawer_holder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="@dimen/slideupdrawermargin"
+        android:layout_marginRight="@dimen/slideupdrawermargin"
+        android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
+        android:background="@drawable/rounded_up_corners_bg" />
+
+
+    <include layout="@layout/slide_up_drawer"
+        tools:visibility = "gone"/>
 </android.support.constraint.ConstraintLayout>

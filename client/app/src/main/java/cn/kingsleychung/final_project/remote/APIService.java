@@ -3,7 +3,7 @@ package cn.kingsleychung.final_project.remote;
 import java.util.List;
 
 import cn.kingsleychung.final_project.Task;
-import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.ResponseUser;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -17,45 +17,45 @@ import rx.Observable;
 public interface APIService {
 
     @POST("user/register")
-    Observable<UserClass> registerPost(@Body UserClass user);
+    Observable<ResponseUser> registerPost(@Body ResponseUser user);
 
     @POST("user/login")
     @FormUrlEncoded
-    Observable<UserClass> loginPost(@Field("userName") String userName, @Field("password") String password);
+    Observable<ResponseUser> loginPost(@Field("userName") String userName, @Field("password") String password);
 
     @POST("user/update")
-    Observable<UserClass> updatePost(@Body UserClass user);
+    Observable<ResponseUser> updatePost(@Body ResponseUser user);
 
     @POST("user/res/user")
     @FormUrlEncoded
-    Observable<UserClass> getUserInformationPost(@Field("userName") String userName);
+    Observable<ResponseUser> getUserInformationPost(@Field("userName") String userName);
 
     @POST("user/friend/add")
     @FormUrlEncoded
-    Observable<UserClass> addFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
+    Observable<ResponseUser> addFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
 
     @POST("user/friend/delete")
     @FormUrlEncoded
-    Observable<UserClass> deleteFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
+    Observable<ResponseUser> deleteFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
 
     @POST("user/money")
     @FormUrlEncoded
-    Observable<UserClass> rechargePost(@Field("userId") String userId, @Field("money") int friendName);
+    Observable<ResponseUser> rechargePost(@Field("userId") String userId, @Field("money") int friendName);
 
     @POST("task/accept")
     @FormUrlEncoded
-    Observable<UserClass> acceptTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
+    Observable<ResponseUser> acceptTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
 
     @POST("task/cancel")
     @FormUrlEncoded
-    Observable<UserClass> cancelTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
+    Observable<ResponseUser> cancelTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
 
     @POST("task/res/task")
     @FormUrlEncoded
     Observable<Task> getTaskPost(@Field("taskId") String taskId);
 
     @POST("task/add")
-    Observable<UserClass> addTaskPost(@Body Task task);
+    Observable<ResponseUser> addTaskPost(@Body Task task);
 
     @POST("task/delete")
     @FormUrlEncoded
@@ -75,7 +75,7 @@ public interface APIService {
     Observable<Task> finishTaskPost(@Field("taskId") String taskId);
 
     @POST("task/near")
-    Observable<List<Task>> getNearTaskPost(@Body UserClass user);
+    Observable<List<Task>> getNearTaskPost(@Body ResponseUser user);
 }
 
 
