@@ -57,11 +57,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Log.i("SHA1", sHA1(this));
-        //initViews();
-        //initMenu();
-        //initPermission();
-        //initClickListener();
+        Log.i("SHA1", sHA1(this));
+        initViews();
+        initMenu();
+        initPermission();
+        initClickListener();
 
         /*测试用*/
         //UserManagement.getInstance().getTask("5a3e6fd7d6028c09d1f75da3", SubscriberManagement.getTaskSubscriber(this));
