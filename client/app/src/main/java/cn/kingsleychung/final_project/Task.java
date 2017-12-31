@@ -14,31 +14,36 @@ public class Task {
     private String taskId;
     private String title;
     private String content;
-    private String taskPos;
-    private String tgPos;
+    private String taskPosName;
+    private double [] taskPosLoc;
+    private String tgPosName;
+    private double [] tgPosLoc;
     private double reward;
     private Boolean kind;
     private int taskState;
     private String srcUser;
     private List<String> tag;
     private List<String> desUser;
+    private String date;  //格式：2017-06-12 06:51:20
 
     private String userId; //只用于序列化
     private List<String> user; //只用于序列化
 
-    public Task(String userId, String title, String content, String taskPos, String tgPos, double reward, boolean kind, List<String> tag, List<String> desUser) {
+    public Task(String userId, String title, String content, String taskPosName, String tgPosName, double reward, boolean kind, List<String> tag, List<String> desUser, double [] taskPosLoc, double [] tgPosLoc ,String date) {
         this.success = false;
         this.message = "";
         this.title = title;
         this.content = content;
-        this.taskPos = taskPos;
-        this.tgPos = tgPos;
+        this.taskPosName = taskPosName;
+        this.tgPosName = tgPosName;
         this.reward = reward;
         this.kind = kind;
         this.tag = tag;
         this.desUser = desUser;
         this.srcUser = userId;
-
+        this.tgPosLoc = tgPosLoc;
+        this.taskPosLoc = taskPosLoc;
+        this.date = date;
         this.userId = userId;
         this.user = desUser;
     }
@@ -55,12 +60,12 @@ public class Task {
         return content;
     }
 
-    public String getTaskPos() {
-        return taskPos;
+    public String getTaskPosName() {
+        return taskPosName;
     }
 
-    public String getTgPos() {
-        return tgPos;
+    public String getTgPosName() {
+        return tgPosName;
     }
 
     public double getReward() {
@@ -83,6 +88,15 @@ public class Task {
         return success;
     }
 
+    public double [] getTaskPosLoc() {
+        return  taskPosLoc;
+    }
+    public double []getTgPosLoc() {
+        return tgPosLoc;
+    }
+    public String getDate() {
+        return date;
+    }
 }
 
 

@@ -1,5 +1,7 @@
 package cn.kingsleychung.final_project.remote;
 
+import java.util.List;
+
 import cn.kingsleychung.final_project.Task;
 import cn.kingsleychung.final_project.User.UserClass;
 import retrofit2.http.Body;
@@ -67,5 +69,13 @@ public interface APIService {
 
     @POST("task/update")
     Observable<Task> updateTaskInformationPost(@Body Task task);
+
+    @POST("task/finish")
+    @FormUrlEncoded
+    Observable<Task> finishTaskPost(@Field("taskId") String taskId);
+
+    @POST("task/near")
+    Observable<List<Task>> getNearTaskPost(@Body UserClass user);
 }
+
 

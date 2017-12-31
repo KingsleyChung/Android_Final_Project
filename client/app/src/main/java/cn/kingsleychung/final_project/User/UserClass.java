@@ -85,6 +85,10 @@ public class UserClass {
     @SerializedName("infTask")
     private List<String> infTask;
 
+    @Expose
+    @SerializedName("location")
+    private double [] location;
+
     public UserClass(String userName, String nickName, String password, String phone, String email, String qq, String wechat) {
         this.success = false;
         this.message = "";
@@ -119,6 +123,8 @@ public class UserClass {
         return userName;
     }
 
+    public String getPassword() { return password; }
+
     public String getNickName() {
         return nickName;
     }
@@ -145,5 +151,12 @@ public class UserClass {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public double [] getLocation() {
+        return location;
+    }
+    public void setLocation(double [] location) {
+        this.location = location;
     }
 }

@@ -3,6 +3,8 @@ package cn.kingsleychung.final_project.User;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.util.List;
+
 import cn.kingsleychung.final_project.SubscriberManagement;
 import cn.kingsleychung.final_project.Task;
 import cn.kingsleychung.final_project.remote.APIService;
@@ -150,6 +152,21 @@ public class UserManagement {
     }
     public void updateTask(Task task, Subscriber<Task> subscriber) {
         apiService.updateTaskInformationPost(task)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void finishTask(String taskId, Subscriber<Task> subscriber) {
+        apiService.finishTaskPost(taskId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    //一定要先给用户设定一个位置才可以调用。
+    public void getNearTask(Subscriber<List<Task>> subscriber) {
+        apiService.getNearTaskPost(getInstance().getUser())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
