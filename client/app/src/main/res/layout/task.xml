@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@android:id/tabhost"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <TextView
+    <LinearLayout
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:orientation="horizontal"
+        android:id="@+id/BottomTab"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="任务"
-        android:textSize="80sp"
-        android:gravity="center"/>
-
+        android:layout_height="60dp">
+        <Button
+            android:id="@+id/receiveTab"
+            android:layout_width="0dp"
+            android:text="接收的任务"
+            android:layout_weight="1.0"
+            android:layout_height="match_parent" />
+        <Button
+            android:id="@+id/sendtTab"
+            android:layout_width="0dp"
+            android:text="发布的任务"
+            android:layout_weight="1.0"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/receiveList"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/BottomTab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/sendList"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/BottomTab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
 </android.support.constraint.ConstraintLayout>
