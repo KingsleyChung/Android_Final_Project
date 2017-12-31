@@ -37,14 +37,14 @@
             <!--android:name="com.amap.api.v2.apikey"-->
             <!--android:value="b98755fb7439231ef0d5e42f3bf8f53e" />-->
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".SigninSignup">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SigninSignup" />
+        <activity android:name=".MainActivity" />
         <service
             android:name=".PollingService"
             android:enabled="true"

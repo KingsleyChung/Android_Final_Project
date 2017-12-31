@@ -54,10 +54,10 @@ public class SigninSignup extends Activity {
     }
 
     private void initStatus() {
+        initView();
         if (mSharedPreferences.getString("username", null) != null && mSharedPreferences.getString("password", null) != null) {
             login(mSharedPreferences.getString("username", null), mSharedPreferences.getString("password", null));
         } else {
-            initView();
             initClickListener();
             initInputListener();
         }

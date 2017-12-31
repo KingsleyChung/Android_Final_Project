@@ -5,9 +5,11 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMapOptions;
 import com.amap.api.maps2d.CameraUpdateFactory;
@@ -19,6 +21,8 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.mancj.slideup.SlideUp;
+import com.mancj.slideup.SlideUpBuilder;
 
 /**
  * Created by Kings on 2017/12/15.
@@ -26,7 +30,7 @@ import com.amap.api.maps2d.model.MyLocationStyle;
 
 public class MapFragment extends Fragment implements AMap.OnMyLocationChangeListener {
 
-    View mapView;
+    View mapView, mDrawer, mDrawerHolder;
     AMap mAMap;
     MapView mMapView;
     MyLocationStyle myLocationStyle;
@@ -40,7 +44,11 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mMapView = mapView.findViewById(R.id.map_display);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
+        mDrawer = mapView.findViewById(R.id.slide_up_drawer);
+        mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
+
         initMap();
+        initDrawer();
         return mapView;
     }
 
@@ -55,7 +63,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
-        initMap();
     }
     @Override
     public void onPause() {
@@ -138,6 +145,23 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
                 LatLng center = cameraPosition.target;
                 System.out.println(center.latitude + "   " + center.longitude);
+            }
+        });
+    }
+
+    private void initDrawer() {
+        final SlideUp slideUp = new SlideUpBuilder(mDrawer)
+                .withStartState(SlideUp.State.HIDDEN)
+                .withStartGravity(Gravity.BOTTOM)
+                .withLoggingEnabled(true)
+                .withGesturesEnabled(true)
+                .withSlideFromOtherView(mapView.findViewById(R.id.map_fragment))
+                .build();
+
+        mDrawerHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                slideUp.show();
             }
         });
     }
