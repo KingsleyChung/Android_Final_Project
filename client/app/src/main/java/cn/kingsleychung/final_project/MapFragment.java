@@ -58,6 +58,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
+        initMap();
     }
     @Override
     public void onPause() {

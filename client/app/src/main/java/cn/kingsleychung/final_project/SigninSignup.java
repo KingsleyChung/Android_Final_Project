@@ -147,6 +147,7 @@ public class SigninSignup extends Activity {
                         @Override
                         public void onError(Throwable e) {
                             Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                            stopWaiting();
                         }
 
                         @Override
@@ -154,9 +155,6 @@ public class SigninSignup extends Activity {
                             //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                             UserManagement.getInstance().storeUser(user);
                             if (user.getSuccess()) {
-                                mEditor.putString("username", user.getUserName());
-                                mEditor.putString("password", user.getPassword());
-                                mEditor.commit();
                                 login(user.getUserName(), user.getPassword());
                             } else {
                                 Toast.makeText(SigninSignup.this, user.getMessage(),Toast.LENGTH_SHORT).show();
@@ -313,16 +311,23 @@ public class SigninSignup extends Activity {
             @Override
             public void onError(Throwable e) {
                 Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                stopWaiting();
             }
 
             @Override
             public void onNext(UserClass user) {
                 //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                 UserManagement.getInstance().storeUser(user);
+                System.out.println(user.getUserName());
+                System.out.println(user.getPassword());
                 if (user.getSuccess()) {
+                    System.out.println(user.getUserName());
+                    System.out.println(user.getPassword());
                     mEditor.putString("username", user.getUserName());
                     mEditor.putString("password", user.getPassword());
                     mEditor.commit();
+                    System.out.println(mSharedPreferences.getString("username", null));
+                    System.out.println(mSharedPreferences.getString("password", null));
                     enterApp();
                 } else {
                     Toast.makeText(SigninSignup.this, R.string.wrongusernameorpassword,Toast.LENGTH_SHORT).show();

@@ -22,18 +22,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="62846b1b849f8b8ed4c8c69686c2e3c7" />
+        <!--TODO:Kingsley's Miix5-->
+        <!--<meta-data-->
+            <!--android:name="com.amap.api.v2.apikey"-->
+            <!--android:value="62846b1b849f8b8ed4c8c69686c2e3c7" />-->
 
-        <activity android:name=".SigninSignup">
+        <!--TODO:Kingsley's MacBook-->
+        <meta-data
+        android:name="com.amap.api.v2.apikey"
+        android:value="c9288e0782954e3bcdd834252ae0bada" />
+
+
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".SigninSignup" />
         <service
             android:name=".PollingService"
             android:enabled="true"
