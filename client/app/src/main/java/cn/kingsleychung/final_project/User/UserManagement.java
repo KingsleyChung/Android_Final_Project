@@ -1,9 +1,6 @@
 package cn.kingsleychung.final_project.User;
 
-import android.content.Context;
-import android.widget.Toast;
-
-import cn.kingsleychung.final_project.SubscriberManagement;
+import java.util.List;
 import cn.kingsleychung.final_project.Task;
 import cn.kingsleychung.final_project.remote.APIService;
 import cn.kingsleychung.final_project.remote.ApiUtils;
@@ -11,14 +8,13 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-
 /**
  * Created by zhoug on 2017/12/23.
  */
 
 public class UserManagement {
 
-    private UserClass user;
+    private ResponseUser user;
     private APIService apiService;
     private Task tempTask;
 
@@ -36,11 +32,11 @@ public class UserManagement {
         return userManagement;
     }
 
-    public void storeUser(UserClass myUser) {
+    public void storeResponseUser(ResponseUser myUser) {
         user = myUser;
     }
 
-    public UserClass getUser() {
+    public ResponseUser getResponseUser() {
         return user;
     }
 
@@ -52,65 +48,65 @@ public class UserManagement {
         tempTask = task;
     }
 
-    public void register(final UserClass user, Subscriber<UserClass> subscriber) {
+    public void register(final ResponseUser user, Subscriber<ResponseUser> subscriber) {
         apiService.registerPost(user)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void login(String userName, String password, Subscriber<UserClass> subscriber) {
+    public void login(String userName, String password, Subscriber<ResponseUser> subscriber) {
         apiService.loginPost(userName, password)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void updateUser(UserClass user, Subscriber<UserClass> subscriber) {
-        user.setUserId(getUser().getUserId());
+    public void updateUser(ResponseUser user, Subscriber<ResponseUser> subscriber) {
+        user.getUser().setUserId(getResponseUser().getUser().getUserId());
         apiService.updatePost(user)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void getUserInformation(String useName, Subscriber<UserClass> subscriber) {
+    public void getUserInformation(String useName, Subscriber<ResponseUser> subscriber) {
         apiService.getUserInformationPost(useName)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void addFriend(String friendName, Subscriber<UserClass> subscriber) {
-        apiService.addFriendPost(getUser().getUserId(), friendName)
+    public void addFriend(String friendName, Subscriber<ResponseUser> subscriber) {
+        apiService.addFriendPost(getResponseUser().getUser().getUserId(), friendName)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void deleteFriend(String friendName, Subscriber<UserClass> subscriber) {
-        apiService.deleteFriendPost(getUser().getUserId(), friendName)
+    public void deleteFriend(String friendName, Subscriber<ResponseUser> subscriber) {
+        apiService.deleteFriendPost(getResponseUser().getUser().getUserId(), friendName)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void rechargeMoney(int money, Subscriber<UserClass> subscriber) {
-        apiService.rechargePost(getUser().getUserId(),money)
+    public void rechargeMoney(int money, Subscriber<ResponseUser> subscriber) {
+        apiService.rechargePost(getResponseUser().getUser().getUserId(),money)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void acceptTask(String taskId, Subscriber<UserClass> subscriber) {
-        apiService.acceptTaskPost(getUser().getUserId(),taskId)
+    public void acceptTask(String taskId, Subscriber<ResponseUser> subscriber) {
+        apiService.acceptTaskPost(getResponseUser().getUser().getUserId(),taskId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }
 
-    public void cancelTask(String taskId, Subscriber<UserClass> subscriber) {
-        apiService.cancelTaskPost(getUser().getUserId(),taskId)
+    public void cancelTask(String taskId, Subscriber<ResponseUser> subscriber) {
+        apiService.cancelTaskPost(getResponseUser().getUser().getUserId(),taskId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
@@ -123,14 +119,14 @@ public class UserManagement {
                   .subscribe(subscriber);
     }
 
-    public void addTask(Task task, Subscriber<UserClass> subscriber) {
+    public void addTask(Task task, Subscriber<ResponseUser> subscriber) {
         apiService.addTaskPost(task)
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);
     }
 
-    public void deleteTask(Task task, Subscriber<UserClass> subscriber) {
+    public void deleteTask(Task task, Subscriber<ResponseUser> subscriber) {
         apiService.addTaskPost(task)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -155,12 +151,27 @@ public class UserManagement {
                 .subscribe(subscriber);
     }
 
-    public void pollingGetMyInformation(Subscriber<UserClass> subscriber) {
+    public void finishTask(String taskId, Subscriber<Task> subscriber) {
+        apiService.finishTaskPost(taskId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    //一定要先给用户设定一个位置才可以调用。
+    public void getNearTask(Subscriber<List<Task>> subscriber) {
+        apiService.getNearTaskPost(getInstance().getResponseUser())
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void pollingGetMyInformation(Subscriber<ResponseUser> subscriber) {
         String userName;
         if (user == null) {
             userName = "1";
         } else {
-            userName = getUser().getUserName();
+            userName = getResponseUser().getUser().getUserName();
         }
         apiService.getUserInformationPost(userName)
                 .subscribeOn(Schedulers.newThread())

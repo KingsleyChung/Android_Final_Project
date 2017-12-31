@@ -1,12 +1,9 @@
 package cn.kingsleychung.final_project;
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
