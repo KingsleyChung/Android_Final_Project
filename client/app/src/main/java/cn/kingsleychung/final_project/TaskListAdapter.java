@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -29,10 +30,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.usernameTexT.setText(myTask.get(position).getSrcUser());
-        holder.titleText.setText(myTask.get(position).getTitle());
-        holder.timeText.setText(myTask.get(position).getDate());
-        holder.briefText.setText(myTask.get(position).getTgPosName());
+        holder.usernameTexT.setText(myTask.get(position).getUserName());
+        holder.titleText.setText("标题：" + myTask.get(position).getTitle());
+        holder.timeText.setText("截止时间：" + myTask.get(position).getDate());
+        holder.briefText.setText("目的地：" + myTask.get(position).getTgPosName());
     }
 
     @Override
@@ -45,12 +46,14 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.MyView
         public TextView titleText;
         public TextView timeText;
         public TextView briefText;
+        public LinearLayout linearLayout;
         public MyViewHolder(View view){
             super(view);
             usernameTexT = view.findViewById(R.id.briefusername);
             titleText = view.findViewById(R.id.brieftitle);
             timeText = view.findViewById(R.id.brieftime);
             briefText = view.findViewById(R.id.brief);
+            linearLayout = view.findViewById(R.id.noLine);
         }
     }
 }

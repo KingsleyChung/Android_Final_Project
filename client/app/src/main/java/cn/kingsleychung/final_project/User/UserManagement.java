@@ -166,6 +166,27 @@ public class UserManagement {
                 .subscribe(subscriber);
     }
 
+    public void getPushTask(String userName, Subscriber<List<Task>> subscriber) {
+        apiService.pushTaskPost(userName)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getacTask(String userName, Subscriber<List<Task>> subscriber) {
+        apiService.actTaskPost(userName)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getInfTask(String userName, Subscriber<List<Task>> subscriber) {
+        apiService.infTaskPost(userName)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
     public void pollingGetMyInformation(Subscriber<ResponseUser> subscriber) {
         String userName;
         if (user == null) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
         android:id="@+id/briefphoto"
@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         />
     <TextView
+        android:textSize="15sp"
         android:id="@+id/brieftitle"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="20dp"
@@ -33,6 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
+        android:textSize="15sp"
         android:id="@+id/brieftime"
         app:layout_constraintLeft_toLeftOf="@id/brieftitle"
         android:text="时间：2017-09-09/21:00~~2017-09-09/22:00"
@@ -41,6 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
+        android:textSize="15sp"
         android:id="@+id/brief"
         android:layout_marginTop="10dp"
         android:text="简要信息：悬赏50"
@@ -48,4 +51,15 @@
         app:layout_constraintLeft_toLeftOf="@id/brieftime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/noLine"
+        android:background="#a0a0a0"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/brief"
+        android:layout_marginTop="15dp"
+        android:layout_width="0dp"
+        android:layout_height="1px">
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

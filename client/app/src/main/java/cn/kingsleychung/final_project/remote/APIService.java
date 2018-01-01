@@ -76,6 +76,18 @@ public interface APIService {
 
     @POST("task/near")
     Observable<List<Task>> getNearTaskPost(@Body ResponseUser user);
+
+    @POST("task/res/pushtask")
+    @FormUrlEncoded
+    Observable<List<Task>> pushTaskPost(@Field("userName") String userName);
+
+    @POST("task/res/actask")
+    @FormUrlEncoded
+    Observable<List<Task>> actTaskPost(@Field("userName") String userName);
+
+    @POST("task/res/inftask")
+    @FormUrlEncoded
+    Observable<List<Task>> infTaskPost(@Field("userName") String userName);
 }
 
 
