@@ -29,7 +29,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.MyView
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-
+        holder.usernameTexT.setText(myTask.get(position).getSrcUser());
+        holder.titleText.setText(myTask.get(position).getTitle());
+        holder.timeText.setText(myTask.get(position).getDate());
+        holder.briefText.setText(myTask.get(position).getTgPosName());
     }
 
     @Override
@@ -38,12 +41,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.MyView
     }
 
     class MyViewHolder extends  RecyclerView.ViewHolder {
-        public TextView username;
-        public TextView title;
-        public TextView time;
-        public TextView brief;
+        public TextView usernameTexT;
+        public TextView titleText;
+        public TextView timeText;
+        public TextView briefText;
         public MyViewHolder(View view){
             super(view);
+            usernameTexT = view.findViewById(R.id.briefusername);
+            titleText = view.findViewById(R.id.brieftitle);
+            timeText = view.findViewById(R.id.brieftime);
+            briefText = view.findViewById(R.id.brief);
         }
     }
 }

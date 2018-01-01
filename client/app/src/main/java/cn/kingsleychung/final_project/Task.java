@@ -84,6 +84,10 @@ public class Task {
         return message;
     }
 
+    public String getSrcUser() {
+        return srcUser;
+    }
+
     public boolean getSuccess() {
         return success;
     }

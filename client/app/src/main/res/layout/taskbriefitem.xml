@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
-        android:id="@+id/photo"
+        android:id="@+id/briefphoto"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -14,28 +14,29 @@
         android:layout_width="45dp"
         android:layout_height="45dp" />
     <TextView
+        android:id="@+id/briefusername"
         android:text="老板"
-        app:layout_constraintTop_toBottomOf="@id/photo"
+        app:layout_constraintTop_toBottomOf="@id/briefphoto"
         android:layout_marginTop="5dp"
-        app:layout_constraintLeft_toLeftOf="@id/photo"
-        app:layout_constraintRight_toRightOf="@id/photo"
+        app:layout_constraintLeft_toLeftOf="@id/briefphoto"
+        app:layout_constraintRight_toRightOf="@id/briefphoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         />
     <TextView
+        android:id="@+id/brieftitle"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="20dp"
-        app:layout_constraintLeft_toRightOf="@+id/photo"
+        app:layout_constraintLeft_toRightOf="@+id/briefphoto"
         android:layout_marginLeft="20dp"
         android:text="标题：垃圾老板去吃屎"
-        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <TextView
-        android:id="@+id/time"
-        app:layout_constraintLeft_toLeftOf="@id/title"
+        android:id="@+id/brieftime"
+        app:layout_constraintLeft_toLeftOf="@id/brieftitle"
         android:text="时间：2017-09-09/21:00~~2017-09-09/22:00"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/brieftitle"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -43,8 +44,8 @@
         android:id="@+id/brief"
         android:layout_marginTop="10dp"
         android:text="简要信息：悬赏50"
-        app:layout_constraintTop_toBottomOf="@+id/time"
-        app:layout_constraintLeft_toLeftOf="@id/time"
+        app:layout_constraintTop_toBottomOf="@+id/brieftime"
+        app:layout_constraintLeft_toLeftOf="@id/brieftime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </android.support.constraint.ConstraintLayout>
