@@ -17,7 +17,7 @@ import com.flyco.tablayout.SlidingTabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.kingsleychung.final_project.User.ResponseUser;
+import cn.kingsleychung.final_project.Other.GetRecordsPagerAdapter;
 import cn.kingsleychung.final_project.User.UserManagement;
 import rx.Subscriber;
 
@@ -27,14 +27,10 @@ import rx.Subscriber;
 
 public class TaskFragment extends Fragment {
     private View TaskView;
-    private List<Task> receiveTask;
-    private List<Task> sendTask;
-    private RecyclerView receiveTaskView;
-    private RecyclerView sendTaskView;
-    private UserManagement userManagement;
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
     private List<Fragment> fragmentList = new ArrayList<Fragment>();
+    private GetRecordsPagerAdapter pagerAdapter;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -43,36 +39,11 @@ public class TaskFragment extends Fragment {
         viewPager = TaskView.findViewById(R.id.viewpager);
         sendTaskActicity sendTaskActicity = new sendTaskActicity();
         receiveTaskActivity receiveTaskActivity = new receiveTaskActivity();
-//        fragmentList.add(sendTaskActicity);
-//        fragmentList.add(receiveTaskActivity);
-//        init();
-//        //receiveTaskView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        sendTaskView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
-//
-//        userManagement = UserManagement.getInstance();
-//        userManagement.getPushTask("1", new Subscriber<List<Task>>() {
-//            @Override
-//            public void onCompleted() {
-//                Log.d("d", "1");
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Log.d("d", "2");
-//            }
-//
-//            @Override
-//            public void onNext(List<Task> tasks) {
-//                Log.d("d", "3");
-//                final TaskListAdapter taskListAdapter = new TaskListAdapter(tasks);
-//                sendTaskView.setAdapter(taskListAdapter);
-//            }
-//        });
+        fragmentList.add(sendTaskActicity);
+        fragmentList.add(receiveTaskActivity);
+        pagerAdapter = new GetRecordsPagerAdapter(this.getFragmentManager(), fragmentList);
+        viewPager.setAdapter(pagerAdapter);
+        slidingTabLayout.setViewPager(viewPager, new String[]{"已发布任务", "已接受任务"});
         return TaskView;
     }
-
-//    private void init() {
-//        receiveTaskView = TaskView.findViewById(R.id.receiveList);
-//        sendTaskView = TaskView.findViewById(R.id.sendList);
-//    }
 }
