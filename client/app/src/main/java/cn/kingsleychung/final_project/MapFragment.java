@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,8 +45,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mMapView = mapView.findViewById(R.id.map_display);
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
         mMapView.onCreate(savedInstanceState);
-        mDrawer = mapView.findViewById(R.id.slide_up_drawer);
-        mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
 
         initMap();
         initDrawer();
@@ -150,6 +149,9 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     }
 
     private void initDrawer() {
+        mDrawer = mapView.findViewById(R.id.slide_up_drawer);
+        mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
+
         final SlideUp slideUp = new SlideUpBuilder(mDrawer)
                 .withStartState(SlideUp.State.HIDDEN)
                 .withStartGravity(Gravity.BOTTOM)
@@ -158,12 +160,45 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                 .withSlideFromOtherView(mapView.findViewById(R.id.map_fragment))
                 .build();
 
+
+        mDrawerHolder.setOnTouchListener(new View.OnTouchListener() {
+            float mPosX = 0, mPosY = 0, mCurPosX = 0, mCurPosY = 0;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // TODO Auto-generated method stub
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        System.out.println("action down");
+                        mPosX = event.getX();
+                        mPosY = event.getY();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        System.out.println("action move");
+                        mCurPosX = event.getX();
+                        mCurPosY = event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        System.out.println("action up");
+                        if (mCurPosY - mPosY < 0 && (Math.abs(mCurPosY - mPosY) > 25)) {
+                            slideUp.show();
+                        }
+                        break;
+                }
+                return true;
+            }
+
+        });
+
         mDrawerHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 slideUp.show();
             }
         });
+    }
+
+    private void setGestureListener(){
+
     }
 
 }

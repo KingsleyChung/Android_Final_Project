@@ -33,5 +33,5 @@
 
 
     <include layout="@layout/slide_up_drawer"
-        tools:visibility = "gone"/>
+        tools:visibility = "visible"/>
 </android.support.constraint.ConstraintLayout>

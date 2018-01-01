@@ -3,7 +3,7 @@
     <corners
         android:topLeftRadius="@dimen/cardcornerradius"
         android:topRightRadius="@dimen/cardcornerradius"
-        android:bottomLeftRadius="0dp"
-        android:bottomRightRadius="0dp"/>
+        android:bottomLeftRadius="@dimen/cardcornerradius"
+        android:bottomRightRadius="@dimen/cardcornerradius"/>
     <solid android:color="@color/guillotine_background_dark"/>
 </shape>

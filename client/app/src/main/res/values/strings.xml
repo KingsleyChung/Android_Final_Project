@@ -24,4 +24,6 @@
     <string name="invalidusername">Invalid username</string>
     <string name="emptyemail">Email cannot be empty</string>
     <string name="emptyphoneno">Phone no. cannot be empty.</string>
+    <string name="new_task">New Task</string>
+    <string name="task_title">Task Title</string>
 </resources>
