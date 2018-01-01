@@ -1,8 +1,6 @@
 package cn.kingsleychung.final_project;
 
 import android.Manifest;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +11,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import cn.kingsleychung.final_project.User.ResponseUser;
-import cn.kingsleychung.final_project.User.ResponseUser;
+import cn.kingsleychung.final_project.User.UserClass;
+import cn.kingsleychung.final_project.User.UserClass;
 import cn.kingsleychung.final_project.User.UserManagement;
 import rx.Subscriber;
 
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Log.i("SHA1", sHA1(this));
+        Log.i("SHA1", sHA1(this));
         initViews();
         initMenu();
         initPermission();
@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        UserManagement.getInstance().login("1429", "1429",loginSubscriber);
         //initService();
         //startService(); 服务的启动要在用户登录之后，不能紧跟初始化服务之后
+
+//        UserManagement.getInstance().uploadPhoto("/data/data/cn.kingsleychung.final_project/1.png", SubscriberManagement.getUserSubscriber(this));
     }
 
     private void initViews() {
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initFragment() {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         mapFragment = new MapFragment();
         transaction.replace(R.id.content_fragment, mapFragment);
@@ -124,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        FragmentManager fm = getFragmentManager();
+        FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
         switch (v.getId()) {
             case R.id.map_group:

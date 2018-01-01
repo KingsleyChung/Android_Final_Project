@@ -12,6 +12,7 @@ public class Task {
     private boolean success;
     private String message ;
     private String taskId;
+    private String userName;
     private String title;
     private String content;
     private String taskPosName;
@@ -29,9 +30,10 @@ public class Task {
     private String userId; //只用于序列化
     private List<String> user; //只用于序列化
 
-    public Task(String userId, String title, String content, String taskPosName, String tgPosName, double reward, boolean kind, List<String> tag, List<String> desUser, double [] taskPosLoc, double [] tgPosLoc ,String date) {
+    public Task(String userName, String userId, String title, String content, String taskPosName, String tgPosName, double reward, boolean kind, List<String> tag, List<String> desUser, double [] taskPosLoc, double [] tgPosLoc ,String date) {
         this.success = false;
         this.message = "";
+        this.userName = userName;
         this.title = title;
         this.content = content;
         this.taskPosName = taskPosName;
@@ -84,6 +86,10 @@ public class Task {
         return message;
     }
 
+    public String getSrcUser() {
+        return srcUser;
+    }
+
     public boolean getSuccess() {
         return success;
     }
@@ -96,6 +102,10 @@ public class Task {
     }
     public String getDate() {
         return date;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }
 

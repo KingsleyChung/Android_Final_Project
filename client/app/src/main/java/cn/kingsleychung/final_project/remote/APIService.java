@@ -3,11 +3,17 @@ package cn.kingsleychung.final_project.remote;
 import java.util.List;
 
 import cn.kingsleychung.final_project.Task;
-import cn.kingsleychung.final_project.User.ResponseUser;
+import cn.kingsleychung.final_project.User.UserClass;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Path;
 import rx.Observable;
 
 /**
@@ -16,66 +22,85 @@ import rx.Observable;
 
 public interface APIService {
 
-    @POST("user/register")
-    Observable<ResponseUser> registerPost(@Body ResponseUser user);
+    @POST("api/user/register")
+    Observable<UserClass> registerPost(@Body UserClass user);
 
-    @POST("user/login")
+    @POST("api/user/login")
     @FormUrlEncoded
-    Observable<ResponseUser> loginPost(@Field("userName") String userName, @Field("password") String password);
+    Observable<UserClass> loginPost(@Field("userName") String userName, @Field("password") String password);
 
-    @POST("user/update")
-    Observable<ResponseUser> updatePost(@Body ResponseUser user);
+    @POST("api/user/update")
+    Observable<UserClass> updatePost(@Body UserClass user);
 
-    @POST("user/res/user")
+    @POST("api/user/res/user")
     @FormUrlEncoded
-    Observable<ResponseUser> getUserInformationPost(@Field("userName") String userName);
+    Observable<UserClass> getUserInformationPost(@Field("userName") String userName);
 
-    @POST("user/friend/add")
+    @POST("api/user/friend/add")
     @FormUrlEncoded
-    Observable<ResponseUser> addFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
+    Observable<UserClass> addFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
 
-    @POST("user/friend/delete")
+    @POST("api/user/friend/delete")
     @FormUrlEncoded
-    Observable<ResponseUser> deleteFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
+    Observable<UserClass> deleteFriendPost(@Field("userId") String userId, @Field("friendName") String friendName);
 
-    @POST("user/money")
+    @POST("api/user/money")
     @FormUrlEncoded
-    Observable<ResponseUser> rechargePost(@Field("userId") String userId, @Field("money") int friendName);
+    Observable<UserClass> rechargePost(@Field("userId") String userId, @Field("money") int friendName);
 
-    @POST("task/accept")
+    @POST("api/task/accept")
     @FormUrlEncoded
-    Observable<ResponseUser> acceptTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
+    Observable<UserClass> acceptTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
 
-    @POST("task/cancel")
+    @POST("api/task/cancel")
     @FormUrlEncoded
-    Observable<ResponseUser> cancelTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
+    Observable<UserClass> cancelTaskPost(@Field("userId") String userId, @Field("taskId") String taskId);
 
-    @POST("task/res/task")
+    @POST("api/task/res/task")
     @FormUrlEncoded
     Observable<Task> getTaskPost(@Field("taskId") String taskId);
 
-    @POST("task/add")
-    Observable<ResponseUser> addTaskPost(@Body Task task);
+    @POST("api/task/add")
+    Observable<UserClass> addTaskPost(@Body Task task);
 
-    @POST("task/delete")
+    @POST("api/task/delete")
     @FormUrlEncoded
     Observable<Task> deleteTaskPost(@Field("taskId") String taskId);
 
-    @POST("task/tag")
+    @POST("api/task/tag")
     Observable<Task> updateTaskTagPost(@Body Task task);
 
-    @POST("task/reward")
+    @POST("api/task/reward")
     Observable<Task> updatTaskRewardPost(@Body Task task);
 
-    @POST("task/update")
+    @POST("api/task/update")
     Observable<Task> updateTaskInformationPost(@Body Task task);
 
-    @POST("task/finish")
+    @POST("api/task/finish")
     @FormUrlEncoded
     Observable<Task> finishTaskPost(@Field("taskId") String taskId);
 
-    @POST("task/near")
-    Observable<List<Task>> getNearTaskPost(@Body ResponseUser user);
+    @POST("api/task/near")
+    Observable<List<Task>> getNearTaskPost(@Body UserClass user);
+
+    @POST("api/task/res/pushtask")
+    @FormUrlEncoded
+    Observable<List<Task>> pushTaskPost(@Field("userName") String userName);
+
+    @POST("api/task/res/actask")
+    @FormUrlEncoded
+    Observable<List<Task>> actTaskPost(@Field("userName") String userName);
+
+    @POST("api/task/res/inftask")
+    @FormUrlEncoded
+    Observable<List<Task>> infTaskPost(@Field("userName") String userName);
+
+    @Multipart
+    @POST("api/user/upload")
+    Observable<UserClass> uploadPhotoPost(@Part("photo\"; filename=\"test.jpg\"") RequestBody img );
+
+    @GET("/public/image/{photoName}")
+    Observable<ResponseBody> downloadPicFromNet(@Path("photoName") String photoName);
 }
 
 
