@@ -1,11 +1,11 @@
 package cn.kingsleychung.final_project;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.widget.Toast;
 
 import cn.kingsleychung.final_project.User.UserClass;
 import cn.kingsleychung.final_project.User.UserManagement;
-import okhttp3.ResponseBody;
 import rx.Subscriber;
 
 /**
@@ -97,8 +97,8 @@ public class SubscriberManagement {
         return temp;
     }
 
-    public static Subscriber<ResponseBody> getImageSubscriber() {
-        Subscriber<ResponseBody> temp = (new Subscriber<ResponseBody>() {
+    public static Subscriber<Bitmap> getImageSubscriber() {
+        Subscriber<Bitmap> temp = (new Subscriber<Bitmap>() {
             @Override
             public void onCompleted() {
 
@@ -109,7 +109,7 @@ public class SubscriberManagement {
             }
 
             @Override
-            public void onNext(ResponseBody body) {
+            public void onNext(Bitmap bitmap) {
                 //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                 //UserManagement.getInstance().storeResponseUser(user);
             }

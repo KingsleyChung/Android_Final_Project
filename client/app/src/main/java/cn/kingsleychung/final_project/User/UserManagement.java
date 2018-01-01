@@ -1,5 +1,8 @@
 package cn.kingsleychung.final_project.User;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.File;
 import java.util.List;
 import cn.kingsleychung.final_project.Task;
@@ -7,8 +10,10 @@ import cn.kingsleychung.final_project.remote.APIService;
 import cn.kingsleychung.final_project.remote.ApiUtils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -194,11 +199,26 @@ public class UserManagement {
                 .subscribe(subscriber);
     }
 
+    //订阅者要将拿到的UserClass对象中的photo字符串存储起来,然后发到后台更新
     public void uploadPhoto(String path, Subscriber<UserClass> subscriber) {
         File file = new File(path);
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"),file);
         apiService.uploadPhotoPost(requestBody)
                 .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+    }
+
+    public void getPhoto(String photoName, Subscriber<Bitmap> subscriber) {
+
+        apiService.downloadPicFromNet(photoName)
+                .subscribeOn(Schedulers.newThread())
+                .map(new Func1<ResponseBody, Bitmap>() {
+                    @Override
+                    public Bitmap call(ResponseBody responseBody) {
+                        return BitmapFactory.decodeStream(responseBody.byteStream());
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subscriber);
     }

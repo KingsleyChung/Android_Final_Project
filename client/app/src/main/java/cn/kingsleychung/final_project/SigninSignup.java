@@ -316,7 +316,6 @@ public class SigninSignup extends Activity {
 
             @Override
             public void onNext(UserClass user) {
-                Toast.makeText(SigninSignup.this, user.getEmail(),Toast.LENGTH_SHORT).show();
                 //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                 UserManagement.getInstance().storeUser(user);
                 if (user.getSuccess()) {
@@ -358,9 +357,9 @@ public class SigninSignup extends Activity {
     private int checkPhoneNo() {
         String phoneNo = mSignupPhoneNo.getText().toString();
         if (phoneNo.equals("")) return 0;
-        //Pattern p = Pattern.compile("/13[123569]{1}\\d{8}|15[1235689]\\d{8}|188\\d{8}/");
-        //Matcher m = p.matcher(phoneNo);
-        //if (!m.matches()) return 2;
+        Pattern p = Pattern.compile("/13[123569]{1}\\d{8}|15[1235689]\\d{8}|188\\d{8}/");
+        Matcher m = p.matcher(phoneNo);
+        if (!m.matches()) return 2;
         return 1;
     }
 
