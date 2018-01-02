@@ -88,7 +88,7 @@ public class UserClass {
         @SerializedName("infTask")
         private List<String> infTask;
 
-        public UserClass(String userName, String nickName, String password, String phone, String email,String qq, String wechat, String icon) {
+        public UserClass(String userName, String nickName, String password, String phone, String email,String qq, String wechat, String photo) {
             this.success = true;
             this.message = "default is successful";
             this.userId = "";
@@ -99,7 +99,7 @@ public class UserClass {
             this.email = email;
             this.qq = qq;
             this.wechat = wechat;
-            this.photo = icon;
+            this.photo = photo;
             this.money = 100;
             this.friend = new ArrayList<String>();
             this.group = new ArrayList<String>();

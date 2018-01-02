@@ -60,8 +60,10 @@ public class UserManagement {
         tempTask = task;
     }
 
-    public void register(final UserClass user, Subscriber<UserClass> subscriber) {
-        apiService.registerPost(user)
+    public void register(String path, final UserClass user, Subscriber<UserClass> subscriber) {
+        File file = new File(path);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+        apiService.registerPost(requestBody,user.getUserName(), user.getNickName(), user.getPassword(),user.getPhone(), user.getEmail(), user.getQq(), user.getWechat())
                   .subscribeOn(Schedulers.newThread())
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(subscriber);

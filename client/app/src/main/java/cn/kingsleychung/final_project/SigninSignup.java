@@ -65,8 +65,7 @@ public class SigninSignup extends Activity {
 
     static final String[] PERMISSIONS = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.CHANGE_WIFI_STATE
+            Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
     @Override
@@ -185,10 +184,7 @@ public class SigninSignup extends Activity {
                 String inputPassword = mSignupPassword.getText().toString();
                 String inputEmail = mSignupEmail.getText().toString();
                 String inputPhoneNo = mSignupPhoneNo.getText().toString();
-                if (!mIconUploadStatus) {
-                    Toast.makeText(SigninSignup.this, getString(R.string.invalidicon), Toast.LENGTH_SHORT).show();
-                }
-                else if (registerCheck()) {
+                if (registerCheck()) {
                     Subscriber<UserClass> registerSubscriber = (new Subscriber<UserClass>() {
                         @Override
                         public void onCompleted() {
@@ -212,9 +208,9 @@ public class SigninSignup extends Activity {
                             }
                         }
                     });
-                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null, mIconTempName);
+                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null,null);
                     waiting();
-                    mUserManagement.register(newUser, registerSubscriber);
+                    mUserManagement.register(mUploadPic.getPath().toString(), newUser, registerSubscriber);
                 } else {
                     Toast.makeText(SigninSignup.this, getString(R.string.inputvalidinfo), Toast.LENGTH_SHORT).show();
                 }
@@ -501,7 +497,7 @@ public class SigninSignup extends Activity {
                     Bitmap bitmap = data.getParcelableExtra("data");
                     saveBitmap(bitmap);
                     this.mIcon.setImageBitmap(bitmap);
-                    uploadIcon();
+                    //uploadIcon();
                 }
                 break;
             default:
