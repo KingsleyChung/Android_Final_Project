@@ -161,7 +161,7 @@ public class SigninSignup extends Activity {
                             }
                         }
                     });
-                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null);
+                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null,null);
                     waiting();
                     mUserManagement.register(newUser, registerSubscriber);
                 } else {

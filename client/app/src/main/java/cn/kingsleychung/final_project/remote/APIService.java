@@ -22,8 +22,20 @@ import rx.Observable;
 
 public interface APIService {
 
+    @Multipart
     @POST("api/user/register")
-    Observable<UserClass> registerPost(@Body UserClass user);
+    Observable<UserClass> registerPost(@Part("photo\"; filename=\"test.png\"") RequestBody img,
+                                       @Field("userName") String userName,
+                                       @Field("nickName") String nickName,
+                                       @Field("password") String password,
+                                       @Field("phone") String phone,
+                                       @Field("email") String email,
+                                       @Field("qq") String qq,
+                                       @Field("wechat") String wechat
+    );
+
+//    @POST("api/user/register")
+//    Observable<UserClass> registerPost(@Body UserClass user);
 
     @POST("api/user/login")
     @FormUrlEncoded
