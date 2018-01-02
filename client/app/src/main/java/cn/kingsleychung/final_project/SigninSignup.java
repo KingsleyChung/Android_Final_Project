@@ -1,10 +1,17 @@
 package cn.kingsleychung.final_project;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputLayout;
@@ -17,6 +24,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +53,22 @@ public class SigninSignup extends Activity {
     private ProgressBar mProgress;
     private UserManagement mUserManagement;
 
+    private boolean mIconUploadStatus;
+    private String mIconTempName;
+    private File mUploadPic;
+
+    private static final int PHOTO_REQUEST_CAREMA = 1;// 拍照
+    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    private static final String PHOTO_FILE_NAME = "upload_pic.png";
+    private static String APP_ROOT_DIR;
+
+    static final String[] PERMISSIONS = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.CHANGE_WIFI_STATE
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +76,29 @@ public class SigninSignup extends Activity {
 
         mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
         mEditor = mSharedPreferences.edit();
-        System.out.println(mSharedPreferences.getString("username", null));
-        System.out.println(mSharedPreferences.getString("password", null));
+        initDir();
         initStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initPermissions();
+    }
+
+    private void initPermissions() {
+        PermissionChecker mPermissionsChecker = new PermissionChecker(this);
+        if (mPermissionsChecker.lacksPermissions(PERMISSIONS)) {
+            PermissionsActivity.startActivityForResult(this, 0, PERMISSIONS);
+        }
+    }
+
+    private void initDir() {
+        APP_ROOT_DIR = Environment.getExternalStorageDirectory() + "/" + getResources().getString(R.string.app_name);
+        mUploadPic = new File(APP_ROOT_DIR + "/temp/", PHOTO_FILE_NAME);
+        if (!mUploadPic.exists()) {
+            mUploadPic.mkdirs();
+        }
     }
 
     private void initStatus() {
@@ -137,7 +185,10 @@ public class SigninSignup extends Activity {
                 String inputPassword = mSignupPassword.getText().toString();
                 String inputEmail = mSignupEmail.getText().toString();
                 String inputPhoneNo = mSignupPhoneNo.getText().toString();
-                if (registerCheck()) {
+                if (!mIconUploadStatus) {
+                    Toast.makeText(SigninSignup.this, getString(R.string.invalidicon), Toast.LENGTH_SHORT).show();
+                }
+                else if (registerCheck()) {
                     Subscriber<UserClass> registerSubscriber = (new Subscriber<UserClass>() {
                         @Override
                         public void onCompleted() {
@@ -161,7 +212,7 @@ public class SigninSignup extends Activity {
                             }
                         }
                     });
-                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null);
+                    UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null, mIconTempName);
                     waiting();
                     mUserManagement.register(newUser, registerSubscriber);
                 } else {
@@ -176,6 +227,14 @@ public class SigninSignup extends Activity {
                 initEditTextErrorMessage();
                 setSignupVisibility(View.INVISIBLE);
                 setSigninVisibility(View.VISIBLE);
+            }
+        });
+
+        mIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectFromGallery();
+                //takeFromCamera();
             }
         });
     }
@@ -419,5 +478,114 @@ public class SigninSignup extends Activity {
 
     private void waiting() {
         mProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PHOTO_REQUEST_CAREMA:
+                // 从相机返回的数据
+                crop(Uri.fromFile(mUploadPic));
+                break;
+            case PHOTO_REQUEST_GALLERY:
+                // 从相册返回的数据
+                if (data != null) {
+                    // 得到图片的全路径
+                    Uri uri = data.getData();
+                    crop(uri);
+                }
+                break;
+            case PHOTO_REQUEST_CUT:
+                // 从剪切图片返回的数据
+                if (data != null) {
+                    Bitmap bitmap = data.getParcelableExtra("data");
+                    saveBitmap(bitmap);
+                    this.mIcon.setImageBitmap(bitmap);
+                    uploadIcon();
+                }
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void selectFromGallery() {
+        // 激活系统图库，选择一张图片
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
+        startActivityForResult(intent, PHOTO_REQUEST_GALLERY);
+    }
+
+    private void takeFromCamera() {
+        // 激活相机
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        // 从文件中创建uri
+        Uri uri = Uri.fromFile(mUploadPic);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CAREMA
+        startActivityForResult(intent, PHOTO_REQUEST_CAREMA);
+    }
+
+    private void crop(Uri uri) {
+        // 裁剪图片意图
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        // 裁剪框的比例，1：1
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // 裁剪后输出图片的尺寸大小
+        intent.putExtra("outputX", 250);
+        intent.putExtra("outputY", 250);
+
+        intent.putExtra("outputFormat", "PNG");// 图片格式
+        intent.putExtra("noFaceDetection", true);// 取消人脸识别
+        intent.putExtra("return-data", true);
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
+    }
+
+    private void saveBitmap(Bitmap bm) {
+        if (mUploadPic.exists()) {
+            mUploadPic.delete();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(mUploadPic);
+            bm.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.flush();
+            out.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    private void uploadIcon() {
+        Subscriber<UserClass> uploadIconSubscriber = (new Subscriber<UserClass>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                mIconUploadStatus = false;
+                Toast.makeText(SigninSignup.this, "Icon upload failed", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNext(UserClass userClass) {
+                mIconUploadStatus = true;
+                mIconTempName = userClass.getIconName();
+                Toast.makeText(SigninSignup.this, "Icon upload succeed.Name: " + mIconTempName , Toast.LENGTH_SHORT).show();
+            }
+        });
+        UserManagement.getInstance().uploadPhoto(mUploadPic.getPath().toString(), uploadIconSubscriber);
     }
 }

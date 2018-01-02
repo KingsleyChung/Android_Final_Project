@@ -11,6 +11,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMapOptions;
 import com.amap.api.maps2d.CameraUpdateFactory;
@@ -36,6 +41,10 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     MapView mMapView;
     MyLocationStyle myLocationStyle;
     UiSettings mUiSettings;
+    ImageView mSubmit, mCancel, mStart, mEnd;
+    FrameLayout mDim;
+    SlideUp mSlideUp;
+
 
     @Nullable
     @Override
@@ -149,10 +158,22 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     }
 
     private void initDrawer() {
+        mDim = mapView.findViewById(R.id.map_dim);
         mDrawer = mapView.findViewById(R.id.slide_up_drawer);
         mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
 
-        final SlideUp slideUp = new SlideUpBuilder(mDrawer)
+        mSlideUp = new SlideUpBuilder(mDrawer)
+                .withListeners(new SlideUp.Listener.Events() {
+                    @Override
+                    public void onSlide(float percent) {
+                        mDim.setAlpha(1 - (percent / 100));
+                    }
+
+                    @Override
+                    public void onVisibilityChanged(int visibility) {
+                    }
+
+                })
                 .withStartState(SlideUp.State.HIDDEN)
                 .withStartGravity(Gravity.BOTTOM)
                 .withLoggingEnabled(true)
@@ -168,19 +189,16 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                 // TODO Auto-generated method stub
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        System.out.println("action down");
                         mPosX = event.getX();
                         mPosY = event.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        System.out.println("action move");
                         mCurPosX = event.getX();
                         mCurPosY = event.getY();
                         break;
                     case MotionEvent.ACTION_UP:
-                        System.out.println("action up");
                         if (mCurPosY - mPosY < 0 && (Math.abs(mCurPosY - mPosY) > 25)) {
-                            slideUp.show();
+                            mSlideUp.show();
                         }
                         break;
                 }
@@ -192,13 +210,54 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mDrawerHolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                slideUp.show();
+                mSlideUp.show();
             }
         });
+
+        initDrawerClickListener();
     }
 
-    private void setGestureListener(){
+    private void initDrawerClickListener() {
+        mSubmit = mapView.findViewById(R.id.drawer_submit);
+        mCancel = mapView.findViewById(R.id.drawer_cancel);
+        mStart = mapView.findViewById(R.id.drawer_start_location_icon);
+        mEnd = mapView.findViewById(R.id.drawer_end_location_icon);
 
+
+        mSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        mStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectLocation();
+            }
+        });
+
+        mEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        mSubmit.callOnClick();
     }
 
+    private LatLng selectLocation() {
+        mSlideUp.hide();
+        return null;
+    }
 }

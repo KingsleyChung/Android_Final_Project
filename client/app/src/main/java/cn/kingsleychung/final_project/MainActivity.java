@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("SHA1", sHA1(this));
         initViews();
         initMenu();
-        initPermission();
+        //initPermission();
+        initFragment();
         initClickListener();
 
         /*测试用*/
@@ -175,27 +176,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
-    private void initPermission() {
-        String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if (Build.VERSION.SDK_INT >= 23) {
-            //如果超过6.0才需要动态权限，否则不需要动态权限
-            //如果同时申请多个权限，可以for循环遍历
-            int check = ContextCompat.checkSelfPermission(this,permissions[0]);
-            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
-            if (check == PackageManager.PERMISSION_GRANTED) {
-                //写入你需要权限才能使用的方法
-                initFragment();
-            } else {
-                //手动去请求用户打开权限(可以在数组中添加多个权限) 1 为请求码 一般设置为final静态变量
-                requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-                initFragment();
-            }
-        } else {
-            initFragment();
-        }
-
-    }
+//    private void initPermission() {
+//        String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION};
+//
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            //如果超过6.0才需要动态权限，否则不需要动态权限
+//            //如果同时申请多个权限，可以for循环遍历
+//            int check = ContextCompat.checkSelfPermission(this,permissions[0]);
+//            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
+//            if (check == PackageManager.PERMISSION_GRANTED) {
+//                //写入你需要权限才能使用的方法
+//                initFragment();
+//            } else {
+//                //手动去请求用户打开权限(可以在数组中添加多个权限) 1 为请求码 一般设置为final静态变量
+//                requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
+//                initFragment();
+//            }
+//        } else {
+//            initFragment();
+//        }
+//
+//    }
 
     void initService() {
         mConnection = new ServiceConnection() {

@@ -6,14 +6,6 @@
     android:id="@+id/map_fragment"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <FrameLayout
-        android:alpha="0"
-        android:id="@+id/dim"
-        android:fitsSystemWindows="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/dimBackground" />
-
     <com.amap.api.maps2d.MapView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -29,9 +21,18 @@
         android:layout_marginLeft="@dimen/slideupdrawermargin"
         android:layout_marginRight="@dimen/slideupdrawermargin"
         android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
-        android:background="@drawable/rounded_up_corners_bg" />
+        android:background="@drawable/half_rounded_up_corners_bg" />
+
+    <FrameLayout
+        android:alpha="0"
+        android:id="@+id/map_dim"
+        android:fitsSystemWindows="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/dimBackground" />
 
 
     <include layout="@layout/slide_up_drawer"
+        android:id="@+id/drawer"
         tools:visibility = "visible"/>
 </android.support.constraint.ConstraintLayout>

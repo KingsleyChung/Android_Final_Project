@@ -26,4 +26,10 @@
     <string name="emptyphoneno">Phone no. cannot be empty.</string>
     <string name="new_task">New Task</string>
     <string name="task_title">Task Title</string>
+    <string name="click_to_locate">Click to locate</string>
+    <string name="task_content">Task Content</string>
+    <string name="submit">SUBMIT</string>
+    <string name="quit">QUIT</string>
+    <string name="help">HELP</string>
+    <string name="invalidicon">Icon is invalid, please upload again.</string>
 </resources>
