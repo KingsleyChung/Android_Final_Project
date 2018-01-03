@@ -96,11 +96,16 @@
                 android:id="@+id/drawer_start_location_text"
                 android:text="@string/click_to_locate"
                 android:textSize="16sp"
+                android:gravity="bottom"
+                android:lines="2"
+                android:ellipsize="end"
                 app:layout_constraintTop_toBottomOf="@id/drawer_start_location_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/drawer_start_location_icon"
+                app:layout_constraintRight_toLeftOf="@id/drawr_location_divider"
                 android:layout_marginBottom="20dp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="20dp"/>
 
             <ImageView
                 android:layout_width="30dp"
@@ -118,11 +123,16 @@
                 android:id="@+id/drawer_end_location_text"
                 android:text="@string/click_to_locate"
                 android:textSize="16sp"
+                android:gravity="bottom"
+                android:lines="2"
+                android:ellipsize="end"
                 app:layout_constraintTop_toBottomOf="@id/drawer_end_location_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="@id/drawer_end_location_icon"
+                app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginBottom="20dp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="20dp"/>
 
         </android.support.constraint.ConstraintLayout>
 
