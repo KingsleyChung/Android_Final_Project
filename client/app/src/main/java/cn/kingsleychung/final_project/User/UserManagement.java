@@ -4,7 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import cn.kingsleychung.final_project.Task;
 import cn.kingsleychung.final_project.remote.APIService;
 import cn.kingsleychung.final_project.remote.ApiUtils;
@@ -60,14 +63,42 @@ public class UserManagement {
         tempTask = task;
     }
 
-    public void register(String path, final UserClass user, Subscriber<UserClass> subscriber) {
-        File file = new File(path);
-        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"),file);
-        apiService.registerPost(requestBody,user.getUserName(), user.getNickName(), user.getPassword(),user.getPhone(), user.getEmail(), user.getQq(), user.getWechat())
-                  .subscribeOn(Schedulers.newThread())
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(subscriber);
+    public void register(final UserClass user, Subscriber<UserClass> subscriber) {
+        apiService.registerPost(user)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(subscriber);
+//          File file = new File(path);
+//        Map<String,RequestBody> params = new HashMap<>();
+//        params.put("userName", toRequestBody(user.getUserName()));
+//        params.put("nickName", toRequestBody(user.getNickName()));
+//        params.put("password", toRequestBody(user.getPassword()));
+//        params.put("phone", toRequestBody(user.getPhone()));
+//        params.put("email", toRequestBody(user.getEmail()));
+//        params.put("qq", toRequestBody(user.getQq()));
+//        params.put("wechat", toRequestBody(user.getWechat()));
+//        params.put("photo\"; filename=\"test.png\"", RequestBody.create(MediaType.parse("image/png"), file));
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"),file);
+//        apiService.registerPost(requestBody,user.getUserName(), user.getNickName(), user.getPassword(),user.getPhone(), user.getEmail(), user.getQq(), user.getWechat())
+//                  .subscribeOn(Schedulers.newThread())
+//                  .observeOn(AndroidSchedulers.mainThread())
+//                  .subscribe(subscriber);
+//        apiService.registerPost(params)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(subscriber);
+
     }
+
+//    private RequestBody toRequestBody(String value) {
+//        String temp;
+//        if (value == null)
+//            temp = "-1";
+//        else
+//            temp = value;
+//        RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), temp);
+//        return requestBody;
+//    }
 
     public void login(String userName, String password, Subscriber<UserClass> subscriber) {
         apiService.loginPost(userName, password)
