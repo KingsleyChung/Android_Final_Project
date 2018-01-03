@@ -1,7 +1,5 @@
 package cn.kingsleychung.final_project;
 
-import com.google.gson.annotations.Expose;
-
 import java.util.List;
 
 /**

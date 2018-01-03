@@ -14,6 +14,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -25,13 +26,13 @@ public interface APIService {
     @Multipart
     @POST("api/user/register")
     Observable<UserClass> registerPost(@Part("photo\"; filename=\"test.png\"") RequestBody img,
-                                       @Part("userName") String userName,
-                                       @Part("nickName") String nickName,
-                                       @Part("password") String password,
-                                       @Part("phone") String phone,
-                                       @Part("email") String email,
-                                       @Part("qq") String qq,
-                                       @Part("wechat") String wechat
+                                       @Query("userName") String userName,
+                                       @Query("nickName") String nickName,
+                                       @Query("password") String password,
+                                       @Query("phone") String phone,
+                                       @Query("email") String email,
+                                       @Query("qq") String qq,
+                                       @Query("wechat") String wechat
     );
 
 //    @POST("api/user/register")

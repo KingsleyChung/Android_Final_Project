@@ -202,7 +202,7 @@ public class SigninSignup extends Activity {
                             //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                             UserManagement.getInstance().storeUser(user);
                             if (user.getSuccess()) {
-                                login(user.getUserName(), user.getPassword());
+                                //login(user.getUserName(), user.getPassword());
                             } else {
                                 Toast.makeText(SigninSignup.this, user.getMessage(),Toast.LENGTH_SHORT).show();
                             }

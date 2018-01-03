@@ -4,6 +4,7 @@ package cn.kingsleychung.final_project;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
@@ -11,10 +12,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMapOptions;
@@ -27,6 +27,11 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
 import com.mancj.slideup.SlideUp;
 import com.mancj.slideup.SlideUpBuilder;
 
@@ -34,17 +39,22 @@ import com.mancj.slideup.SlideUpBuilder;
  * Created by Kings on 2017/12/15.
  */
 
-public class MapFragment extends Fragment implements AMap.OnMyLocationChangeListener {
+public class MapFragment extends Fragment implements AMap.OnMyLocationChangeListener, GeocodeSearch.OnGeocodeSearchListener {
 
     View mapView, mDrawer, mDrawerHolder;
+    ConstraintLayout mInstructionBar;
+    TextView mInstruction, mStartText, mEndText;
     AMap mAMap;
     MapView mMapView;
     MyLocationStyle myLocationStyle;
     UiSettings mUiSettings;
-    ImageView mSubmit, mCancel, mStart, mEnd;
+    ImageView mSubmit, mCancel, mStart, mEnd, mInstructionSubmit, mInstructionCancel;
     FrameLayout mDim;
     SlideUp mSlideUp;
-
+    LatLng mStartLocation, mEndLocation;
+    Marker mSelectedLocationMarker;
+    GeocodeSearch geocoderSearch;
+    int selectingMode;
 
     @Nullable
     @Override
@@ -129,6 +139,11 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_CENTER);
 
+        mSelectedLocationMarker = null;
+
+        geocoderSearch = new GeocodeSearch(getContext());
+        geocoderSearch.setOnGeocodeSearchListener(this);
+
         //testing
         LatLng latLng = new LatLng(23.058324,113.390167);
         final Marker marker = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.048324,113.398167)).title("广州").snippet("DefaultMarker"));
@@ -146,7 +161,10 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mAMap.setOnCameraChangeListener(new AMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-
+                if (mSelectedLocationMarker != null) {
+                    LatLng center = cameraPosition.target;
+                    mSelectedLocationMarker.setPosition(center);
+                }
             }
 
             @Override
@@ -161,6 +179,17 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mDim = mapView.findViewById(R.id.map_dim);
         mDrawer = mapView.findViewById(R.id.slide_up_drawer);
         mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
+        mSubmit = mapView.findViewById(R.id.drawer_submit);
+        mCancel = mapView.findViewById(R.id.drawer_cancel);
+        mStart = mapView.findViewById(R.id.drawer_start_location_icon);
+        mEnd = mapView.findViewById(R.id.drawer_end_location_icon);
+        mInstructionBar = mapView.findViewById(R.id.drawer_instruction_bar);
+        mInstructionSubmit = mapView.findViewById(R.id.drawer_instruction_submit);
+        mInstructionCancel = mapView.findViewById(R.id.drawer_instruction_cancel);
+        mInstruction = mapView.findViewById(R.id.drawer_instruction_text);
+        mStartText = mapView.findViewById(R.id.drawer_start_location_text);
+        mEndText = mapView.findViewById(R.id.drawer_end_location_text);
+        selectingMode = 0;
 
         mSlideUp = new SlideUpBuilder(mDrawer)
                 .withListeners(new SlideUp.Listener.Events() {
@@ -218,12 +247,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     }
 
     private void initDrawerClickListener() {
-        mSubmit = mapView.findViewById(R.id.drawer_submit);
-        mCancel = mapView.findViewById(R.id.drawer_cancel);
-        mStart = mapView.findViewById(R.id.drawer_start_location_icon);
-        mEnd = mapView.findViewById(R.id.drawer_end_location_icon);
-
-
         mSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,23 +264,79 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectLocation();
+                selectingMode = 1;
+                enterSelectLocation(getResources().getString(R.string.starting_point));
+
             }
         });
 
         mEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                selectingMode = -1;
+                enterSelectLocation(getResources().getString(R.string.destination));
             }
         });
 
+        mInstructionSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitSelectLocation();
+            }
+        });
 
-        mSubmit.callOnClick();
+        mInstructionCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSelectedLocationMarker != null) {
+                    mSelectedLocationMarker.destroy();
+                }
+                exitSelectLocation();
+            }
+        });
     }
 
-    private LatLng selectLocation() {
+    private void enterSelectLocation(String point) {
         mSlideUp.hide();
-        return null;
+        mInstructionBar.setVisibility(View.VISIBLE);
+        mInstruction.setText(point);
+        mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target));
+    }
+
+    private void exitSelectLocation() {
+        mSlideUp.show();
+        mInstructionBar.setVisibility(View.GONE);
+        if (mSelectedLocationMarker != null) {
+            if (selectingMode == 1) {
+                mStartLocation = mSelectedLocationMarker.getPosition();
+                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mStartLocation.latitude, mStartLocation.longitude), 0, GeocodeSearch.AMAP);
+                geocoderSearch.getFromLocationAsyn(query);
+            }
+            else if (selectingMode == -1) {
+                mEndLocation = mSelectedLocationMarker.getPosition();
+                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mEndLocation.latitude, mEndLocation.longitude), 0, GeocodeSearch.AMAP);
+                geocoderSearch.getFromLocationAsyn(query);
+            }
+            mSelectedLocationMarker.destroy();
+        }
+    }
+
+    @Override
+    public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
+        if (i == 1000) {
+            if (regeocodeResult != null && regeocodeResult.getRegeocodeAddress() != null
+                    && regeocodeResult.getRegeocodeAddress().getFormatAddress() != null) {
+                if (selectingMode == 1)
+                    mStartText.setText(regeocodeResult.getRegeocodeAddress().getFormatAddress());
+                else if (selectingMode == -1)
+                    mEndText.setText(regeocodeResult.getRegeocodeAddress().getFormatAddress());
+            }
+        }
+        selectingMode = 0;
+    }
+
+    @Override
+    public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
     }
 }
