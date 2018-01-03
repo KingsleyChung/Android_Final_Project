@@ -184,9 +184,7 @@ public class SigninSignup extends Activity {
                 String inputPassword = mSignupPassword.getText().toString();
                 String inputEmail = mSignupEmail.getText().toString();
                 String inputPhoneNo = mSignupPhoneNo.getText().toString();
-                if (!mIconUploadStatus) {
-                    Toast.makeText(SigninSignup.this, getString(R.string.invalidicon), Toast.LENGTH_SHORT).show();
-                } else if (registerCheck()) {
+                if (registerCheck()) {
                     Subscriber<UserClass> registerSubscriber = (new Subscriber<UserClass>() {
                         @Override
                         public void onCompleted() {
@@ -499,7 +497,6 @@ public class SigninSignup extends Activity {
                     Bitmap bitmap = data.getParcelableExtra("data");
                     saveBitmap(bitmap);
                     this.mIcon.setImageBitmap(bitmap);
-                    mIconUploadStatus = true;
                     //uploadIcon();
                 }
                 break;

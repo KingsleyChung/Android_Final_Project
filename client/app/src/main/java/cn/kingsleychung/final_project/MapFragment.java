@@ -1,5 +1,6 @@
 package cn.kingsleychung.final_project;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMapOptions;
@@ -252,7 +254,9 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDetailTaskActivity();
+                if (checkBriefTask()) {
+                    showDetailTaskActivity();
+                }
             }
         });
 
@@ -332,6 +336,22 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         }
     }
 
+    private boolean checkBriefTask() {
+        if (mTitle.getText().toString().equals("")) {
+            Toast.makeText(getContext(), getString(R.string.emptytasktitle), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (mStartLocation == null) {
+            Toast.makeText(getContext(), getString(R.string.emptystartlocation), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (mContent.getText().toString().equals("")) {
+            Toast.makeText(getContext(), getString(R.string.emptycontent), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     private void clearDrawer() {
         mTitle.setText("");
         mStartText.setText(getString(R.string.click_to_locate));
@@ -344,7 +364,21 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     }
 
     private void showDetailTaskActivity() {
-
+        Intent intent = new Intent(getActivity(), DetailTask.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("TaskTitle", mTitle.getText().toString());
+        bundle.putDouble("StartLatitude", mStartLocation.latitude);
+        bundle.putDouble("StartLongitude", mStartLocation.longitude);
+        if (mEndLocation != null) {
+            bundle.putBoolean("EndStatus", true);
+            bundle.putDouble("EndLatitude", mEndLocation.latitude);
+            bundle.putDouble("EndLongitude", mEndLocation.longitude);
+        } else {
+            bundle.putBoolean("EndStatus", true);
+        }
+        bundle.putString("TaskContent", mContent.getText().toString());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
