@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.kingsleychung.final_project.Other.GetRecordsPagerAdapter;
-import cn.kingsleychung.final_project.User.UserManagement;
-import rx.Subscriber;
 
 /**
  * Created by Kings on 2017/12/15.
