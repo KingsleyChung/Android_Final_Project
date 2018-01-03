@@ -1,6 +1,5 @@
 package cn.kingsleychung.final_project;
 
-
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,6 +44,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     View mapView, mDrawer, mDrawerHolder;
     ConstraintLayout mInstructionBar;
     TextView mInstruction, mStartText, mEndText;
+    EditText mTitle, mContent;
     AMap mAMap;
     MapView mMapView;
     MyLocationStyle myLocationStyle;
@@ -52,7 +53,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     FrameLayout mDim;
     SlideUp mSlideUp;
     LatLng mStartLocation, mEndLocation;
-    Marker mSelectedLocationMarker;
+    Marker mSelectedLocationMarker, mStartMarker, mEndMarker;
     GeocodeSearch geocoderSearch;
     int selectingMode;
 
@@ -179,6 +180,8 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mDim = mapView.findViewById(R.id.map_dim);
         mDrawer = mapView.findViewById(R.id.slide_up_drawer);
         mDrawerHolder = mapView.findViewById(R.id.drawer_holder);
+        mTitle = mapView.findViewById(R.id.drawer_title);
+        mContent = mapView.findViewById(R.id.drawer_content);
         mSubmit = mapView.findViewById(R.id.drawer_submit);
         mCancel = mapView.findViewById(R.id.drawer_cancel);
         mStart = mapView.findViewById(R.id.drawer_start_location_icon);
@@ -233,7 +236,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                 }
                 return true;
             }
-
         });
 
         mDrawerHolder.setOnClickListener(new View.OnClickListener() {
@@ -250,14 +252,15 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showDetailTaskActivity();
             }
         });
 
         mCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                clearDrawer();
+                mSlideUp.hide();
             }
         });
 
@@ -300,7 +303,13 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mSlideUp.hide();
         mInstructionBar.setVisibility(View.VISIBLE);
         mInstruction.setText(point);
-        mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target));
+        if (point.equals(getString(R.string.starting_point)) && mStartMarker != null) {
+            mSelectedLocationMarker = mStartMarker;
+        } else if (point.equals(getString(R.string.destination)) && mEndMarker != null) {
+            mSelectedLocationMarker = mEndMarker;
+        } else {
+            mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target));
+        }
     }
 
     private void exitSelectLocation() {
@@ -309,16 +318,33 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         if (mSelectedLocationMarker != null) {
             if (selectingMode == 1) {
                 mStartLocation = mSelectedLocationMarker.getPosition();
+                mStartMarker = mAMap.addMarker(new MarkerOptions().position(mStartLocation));
                 RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mStartLocation.latitude, mStartLocation.longitude), 0, GeocodeSearch.AMAP);
                 geocoderSearch.getFromLocationAsyn(query);
             }
             else if (selectingMode == -1) {
                 mEndLocation = mSelectedLocationMarker.getPosition();
+                mEndMarker = mAMap.addMarker(new MarkerOptions().position(mEndLocation));
                 RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mEndLocation.latitude, mEndLocation.longitude), 0, GeocodeSearch.AMAP);
                 geocoderSearch.getFromLocationAsyn(query);
             }
             mSelectedLocationMarker.destroy();
         }
+    }
+
+    private void clearDrawer() {
+        mTitle.setText("");
+        mStartText.setText(getString(R.string.click_to_locate));
+        mEndText.setText(getString(R.string.click_to_locate));
+        if (mStartMarker != null) mStartMarker.destroy();
+        if (mEndMarker != null) mEndMarker.destroy();
+        mStartLocation = null;
+        mEndLocation = null;
+        mContent.setText("");
+    }
+
+    private void showDetailTaskActivity() {
+
     }
 
     @Override
