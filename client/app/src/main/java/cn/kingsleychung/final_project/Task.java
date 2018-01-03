@@ -24,6 +24,7 @@ public class Task {
     private List<String> tag;
     private List<String> desUser;
     private String date;  //格式：2017-06-12 06:51:20
+    private String photo;
 
     private String userId; //只用于序列化
     private List<String> user; //只用于序列化
@@ -90,6 +91,10 @@ public class Task {
 
     public boolean getSuccess() {
         return success;
+    }
+
+    public String getPhoto() {
+        return photo;
     }
 
     public double [] getTaskPosLoc() {

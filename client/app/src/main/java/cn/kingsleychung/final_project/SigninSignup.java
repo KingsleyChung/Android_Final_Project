@@ -212,7 +212,7 @@ public class SigninSignup extends Activity {
                     });
                     UserClass newUser = new UserClass(inputUsername, null, inputPassword, inputPhoneNo, inputEmail, null, null,null);
                     waiting();
-                    mUserManagement.register(mUploadPic.getPath().toString(), newUser, registerSubscriber);
+                    mUserManagement.register(newUser, registerSubscriber);
                 } else {
                     Toast.makeText(SigninSignup.this, getString(R.string.inputvalidinfo), Toast.LENGTH_SHORT).show();
                 }
