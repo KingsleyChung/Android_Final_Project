@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TaskFragment taskFragment;
     private LinearLayout map, task, profile, setting;
     private View guillotineMenu;
+    private ProfileFragment profileFragment;
+
 
     //服务
     private IBinder mBinder;
@@ -135,7 +137,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 closeMenu.callOnClick();
                 break;
             case R.id.profile_group:
+                if (profileFragment == null) profileFragment = new ProfileFragment();
+                transaction.replace(R.id.content_fragment, profileFragment);
                 selectedFragment = 2;
+                closeMenu.callOnClick();
                 break;
             case R.id.setting_group:
                 selectedFragment = 3;

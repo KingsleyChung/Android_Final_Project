@@ -54,7 +54,37 @@ public class ReceiveTaskActivity extends Fragment {
                 Log.d("d", "6");
                 resultTask = transform(tasks);
                 taskListAdapter = new TaskListAdapter(resultTask);
-                receiveTaskView.setAdapter(taskListAdapter);
+                taskListAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Log.v("debug", "click");
+                    }
+
+                    @Override
+                    public void OnLongItemClick(View view, int position) {
+                        Log.v("debug", "longclick");
+                    }
+                });
+                for(int i = 0; i < resultTask.size(); i++) {
+                    final int index = i;
+                    UserManagement.getInstance().getPhoto(tasks.get(i).getPhoto(), new Subscriber<Bitmap>() {
+                        @Override
+                        public void onCompleted() {
+                            Log.d("debug", "14");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("debug", "12");
+                        }
+
+                        @Override
+                        public void onNext(Bitmap bitmap) {
+                            resultTask.get(index).setImage(bitmap);
+                            receiveTaskView.setAdapter(taskListAdapter);
+                        }
+                    });
+                }
             }
         });
         return TaskView;
@@ -65,24 +95,6 @@ public class ReceiveTaskActivity extends Fragment {
         for(int i = 0; i < tasks.size(); i++) {
             ListTask item = new ListTask(tasks.get(i).getUserName(), tasks.get(i).getTitle(), tasks.get(i).getDate(), tasks.get(i).getTaskPosName(), tasks.get(i).getAcUser(), null);
             result.add(item);
-        }
-        for(int i = 0; i < tasks.size(); i++) {
-            UserManagement.getInstance().getPhoto(tasks.get(i).getPhoto(), new Subscriber<Bitmap>() {
-                @Override
-                public void onCompleted() {
-                    Log.d("debug", "14");
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    Log.d("debug", "12");
-                }
-
-                @Override
-                public void onNext(Bitmap bitmap) {
-                    Log.d("debug", "13");
-                }
-            });
         }
         return result;
     }
