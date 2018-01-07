@@ -47,6 +47,7 @@ public class SendTaskActivity extends Fragment {
             @Override
             public void onError(Throwable e) {
                 Log.d("d", "2");
+                System.out.println(e);
             }
 
             @Override
