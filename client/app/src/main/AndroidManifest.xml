@@ -22,17 +22,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--TODO:Kingsley's Miix5-->
-        <!--<meta-data-->
-            <!--android:name="com.amap.api.v2.apikey"-->
-            <!--android:value="62846b1b849f8b8ed4c8c69686c2e3c7" />-->
 
-        <!--TODO:Kingsley's MacBook-->
-        <!--<meta-data-->
-        <!--android:name="com.amap.api.v2.apikey"-->
-        <!--android:value="c9288e0782954e3bcdd834252ae0bada" />-->
+        <!-- TODO:Kingsley's Miix5 -->
+        <!-- <meta-data -->
+        <!-- android:name="com.amap.api.v2.apikey" -->
+        <!-- android:value="62846b1b849f8b8ed4c8c69686c2e3c7" /> -->
 
-        <!--TODO:Weimumu-->
+
+        <!-- TODO:Kingsley's MacBook -->
+        <!-- <meta-data -->
+        <!-- android:name="com.amap.api.v2.apikey" -->
+        <!-- android:value="c9288e0782954e3bcdd834252ae0bada" /> -->
+
+
+        <!-- TODO:Weimumu -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="b98755fb7439231ef0d5e42f3bf8f53e" />
@@ -45,11 +48,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
-        <activity android:name=".PermissionsActivity"/>
+        <activity android:name=".PermissionsActivity" />
         <activity android:name=".DetailTask" />
+
         <service
             android:name=".PollingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".ProfileFragment"></activity>
     </application>
+
 </manifest>

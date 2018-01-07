@@ -19,7 +19,6 @@ public class DirectionalTaskInfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mInfoView = inflater.inflate(R.layout.directional_task_info, container, false);
-
         return mInfoView;
     }
 }

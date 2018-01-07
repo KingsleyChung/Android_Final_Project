@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     View openMenu, closeMenu;
     MapFragment mapFragment;
     TaskFragment taskFragment;
+    ProfileFragment profileFragment;
     LinearLayout map, task, profile, setting;
     View guillotineMenu;
 
@@ -141,6 +142,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 closeMenu.callOnClick();
                 break;
             case R.id.profile_group:
+                if (profileFragment == null) profileFragment = new ProfileFragment();
+                transaction.replace(R.id.content_fragment, profileFragment);
+                closeMenu.callOnClick();
                 break;
             case R.id.setting_group:
                 break;
