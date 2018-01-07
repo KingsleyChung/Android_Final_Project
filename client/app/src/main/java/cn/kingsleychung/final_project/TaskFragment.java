@@ -32,9 +32,9 @@ public class TaskFragment extends Fragment {
         TaskView = inflater.inflate(R.layout.task, container, false);
         slidingTabLayout = TaskView.findViewById(R.id.tablayout);
         viewPager = TaskView.findViewById(R.id.viewpager);
-        sendTaskActicity sendTaskActicity = new sendTaskActicity();
-        receiveTaskActivity receiveTaskActivity = new receiveTaskActivity();
-        fragmentList.add(sendTaskActicity);
+        SendTaskActivity sendTaskActivity = new SendTaskActivity();
+        ReceiveTaskActivity receiveTaskActivity = new ReceiveTaskActivity();
+        fragmentList.add(sendTaskActivity);
         fragmentList.add(receiveTaskActivity);
         pagerAdapter = new GetRecordsPagerAdapter(this.getFragmentManager(), fragmentList);
         viewPager.setAdapter(pagerAdapter);
