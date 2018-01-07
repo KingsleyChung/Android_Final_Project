@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class SendTaskActivity extends Fragment {
     private List<Task> taskList;
     private RecyclerView sendTaskView;
     private UserManagement userManagement;
+    private ProgressBar progressBar;
     private TaskListAdapter taskListAdapter;
 
     @Override
@@ -38,6 +40,7 @@ public class SendTaskActivity extends Fragment {
         // TODO Auto-generated method stub
         TaskView =  inflater.inflate(R.layout.sendtask, container, false);
         sendTaskView = TaskView.findViewById(R.id.sendList);
+        progressBar = TaskView.findViewById(R.id.sendProgress);
         sendTaskView.setLayoutManager(new LinearLayoutManager(this.getActivity()));
 
         userManagement = UserManagement.getInstance();
@@ -88,6 +91,7 @@ public class SendTaskActivity extends Fragment {
                         public void onNext(Bitmap bitmap) {
                             resultTask.get(index).setImage(bitmap);
                             sendTaskView.setAdapter(taskListAdapter);
+                            progressBar.setVisibility(View.GONE);
                         }
                     });
                 }
