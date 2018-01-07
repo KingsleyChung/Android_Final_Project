@@ -1,19 +1,16 @@
 package cn.kingsleychung.final_project;
 
-import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -22,36 +19,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-
-import cn.kingsleychung.final_project.User.UserClass;
-import cn.kingsleychung.final_project.User.UserClass;
-import cn.kingsleychung.final_project.User.UserManagement;
-import rx.Subscriber;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final long RIPPLE_DURATION = 0;
 
-    Toolbar toolbar;
-    FrameLayout root;
-    View openMenu, closeMenu;
-    MapFragment mapFragment;
-    TaskFragment taskFragment;
-    ProfileFragment profileFragment;
-    LinearLayout map, task, profile, setting;
-    View guillotineMenu;
+    private Toolbar toolbar;
+    private FrameLayout root;
+    private View openMenu, closeMenu;
+    private MapFragment mapFragment;
+    private TaskFragment taskFragment;
+    private LinearLayout map, task, profile, setting;
+    private View guillotineMenu;
+    private ProfileFragment profileFragment;
+
 
     //服务
     private IBinder mBinder;
     private ServiceConnection mConnection;
+
+    private int selectedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mapFragment = new MapFragment();
         transaction.replace(R.id.content_fragment, mapFragment);
         transaction.commit();
+        selectedFragment = 0;
     }
 
     private void initClickListener() {
@@ -132,21 +125,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FragmentTransaction transaction = fm.beginTransaction();
         switch (v.getId()) {
             case R.id.map_group:
-                if (mapFragment == null) mapFragment = new MapFragment();
+                //if (mapFragment != null && selectedFragment != 0) mapFragment.onDestroy();
+                mapFragment = new MapFragment();
                 transaction.replace(R.id.content_fragment, mapFragment);
+                selectedFragment = 0;
                 closeMenu.callOnClick();
                 break;
             case R.id.task_group:
-                if (taskFragment == null) taskFragment = new TaskFragment();
+                //if (taskFragment == null) taskFragment = new TaskFragment();
+                taskFragment = new TaskFragment();
                 transaction.replace(R.id.content_fragment, taskFragment);
+                selectedFragment = 1;
                 closeMenu.callOnClick();
                 break;
             case R.id.profile_group:
-                if (profileFragment == null) profileFragment = new ProfileFragment();
+                //if (profileFragment == null) profileFragment = new ProfileFragment();
+                profileFragment = new ProfileFragment();
                 transaction.replace(R.id.content_fragment, profileFragment);
+                selectedFragment = 2;
                 closeMenu.callOnClick();
                 break;
             case R.id.setting_group:
+                selectedFragment = 3;
                 break;
         }
 
@@ -179,28 +179,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return null;
     }
-
-//    private void initPermission() {
-//        String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION};
-//
-//        if (Build.VERSION.SDK_INT >= 23) {
-//            //如果超过6.0才需要动态权限，否则不需要动态权限
-//            //如果同时申请多个权限，可以for循环遍历
-//            int check = ContextCompat.checkSelfPermission(this,permissions[0]);
-//            // 权限是否已经 授权 GRANTED---授权  DINIED---拒绝
-//            if (check == PackageManager.PERMISSION_GRANTED) {
-//                //写入你需要权限才能使用的方法
-//                initFragment();
-//            } else {
-//                //手动去请求用户打开权限(可以在数组中添加多个权限) 1 为请求码 一般设置为final静态变量
-//                requestPermissions(new String[]{ Manifest.permission.ACCESS_COARSE_LOCATION }, 1);
-//                initFragment();
-//            }
-//        } else {
-//            initFragment();
-//        }
-//
-//    }
 
     void initService() {
         mConnection = new ServiceConnection() {
@@ -235,4 +213,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onDestroy();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (selectedFragment == 0) {
+            moveTaskToBack(true);
+        } else {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.replace(R.id.content_fragment, mapFragment);
+            transaction.commit();
+            selectedFragment = 0;
+        }
+    }
 }

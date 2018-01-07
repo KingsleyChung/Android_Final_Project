@@ -205,6 +205,8 @@ public class UserManagement {
 
     //一定要先给用户设定一个位置才可以调用。
     public void getNearTask(Subscriber<List<Task>> subscriber) {
+        System.out.println(getInstance().getUser().getLocation()[1]);
+        System.out.println(getInstance().getUser().getLocation()[0]);
         apiService.getNearTaskPost(getInstance().getUser())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())

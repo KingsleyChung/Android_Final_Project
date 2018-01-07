@@ -24,7 +24,6 @@ public class TaskFragment extends Fragment {
     private View TaskView;
     private SlidingTabLayout slidingTabLayout;
     private ViewPager viewPager;
-    private List<Fragment> fragmentList = new ArrayList<Fragment>();
     private GetRecordsPagerAdapter pagerAdapter;
     @Nullable
     @Override
@@ -34,11 +33,17 @@ public class TaskFragment extends Fragment {
         viewPager = TaskView.findViewById(R.id.viewpager);
         SendTaskActivity sendTaskActivity = new SendTaskActivity();
         ReceiveTaskActivity receiveTaskActivity = new ReceiveTaskActivity();
+        List<Fragment> fragmentList = new ArrayList<Fragment>();
         fragmentList.add(sendTaskActivity);
         fragmentList.add(receiveTaskActivity);
-        pagerAdapter = new GetRecordsPagerAdapter(this.getFragmentManager(), fragmentList);
+        pagerAdapter = new GetRecordsPagerAdapter(this.getChildFragmentManager(), fragmentList);
         viewPager.setAdapter(pagerAdapter);
         slidingTabLayout.setViewPager(viewPager, new String[]{"已发布任务", "已接受任务"});
         return TaskView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }

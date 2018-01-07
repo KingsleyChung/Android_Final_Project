@@ -1,6 +1,7 @@
 package cn.kingsleychung.final_project;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,11 @@ import rx.Subscriber;
 public class SendTaskActivity extends Fragment {
     private View TaskView;
     private List<ListTask> resultTask;
+    private List<Task> taskList;
     private RecyclerView sendTaskView;
     private UserManagement userManagement;
     private TaskListAdapter taskListAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,22 +50,25 @@ public class SendTaskActivity extends Fragment {
             @Override
             public void onError(Throwable e) {
                 Log.d("d", "2");
+                System.out.println(e);
             }
 
             @Override
             public void onNext(List<Task> tasks) {
                 Log.d("d", "3");
                 resultTask = transform(tasks);
+                taskList = tasks;
                 taskListAdapter = new TaskListAdapter(resultTask);
                 taskListAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                    Log.v("debug", "click");
+                        Log.v("debug", "click");
+                        showDetailActivity(position);
                     }
 
                     @Override
                     public void OnLongItemClick(View view, int position) {
-                    Log.v("debug", "longclick");
+                        Log.v("debug", "longclick");
                     }
                 });
                 for(int i = 0; i < resultTask.size(); i++) {
@@ -89,6 +94,32 @@ public class SendTaskActivity extends Fragment {
             }
         });
         return TaskView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    private void showDetailActivity(int index) {
+        Intent intent = new Intent(getActivity(), DetailTask.class);
+        Bundle bundle = new Bundle();
+        Task sendTask = taskList.get(index);
+        bundle.putString("Mode", "ShowDetail");
+        bundle.putString("TaskTitle", sendTask.getTitle());
+        bundle.putString("TaskContent", sendTask.getContent());
+        bundle.putString("TaskExpire", sendTask.getDate());
+        bundle.putDouble("StartLatitude", sendTask.getTaskPosLoc()[1]);
+        bundle.putDouble("StartLogitude", sendTask.getTaskPosLoc()[0]);
+        if (sendTask.getTgPosLoc() != null) {
+            bundle.putDouble("EndLatitude", sendTask.getTgPosLoc()[1]);
+            bundle.putDouble("EndLogtitude", sendTask.getTgPosLoc()[0]);
+        }
+        bundle.putString("AcceptUser", sendTask.getAcUser());
+        bundle.putBoolean("Kind", sendTask.getKind());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private List<ListTask> transform(List<Task> tasks) {

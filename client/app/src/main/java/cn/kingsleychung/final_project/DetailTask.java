@@ -39,7 +39,7 @@ public class DetailTask extends FragmentActivity {
     private GetRecordsPagerAdapter pagerAdapter;
     private TextView mTitle, mExpireDate;
     private EditText mContent;
-    private ImageView mSubmit;
+    private ImageView mBack, mHelp, mSubmit;
     private Calendar mCalendar;
     private MapView mMapView;
     private AMap mAMap;
@@ -64,12 +64,19 @@ public class DetailTask extends FragmentActivity {
         viewPager = findViewById(R.id.detail_view_pager);
         mExpireDate = findViewById(R.id.detail_expire_date);
         mSubmit = findViewById(R.id.detail_submit);
+        mBack = findViewById(R.id.detail_back);
+        mHelp = findViewById(R.id.detail_help);
     }
 
     private void initStatus() {
         Bundle bundle = getIntent().getExtras();
         mTitle.setText(bundle.getString("TaskTitle"));
         mContent.setText(bundle.getString("TaskContent"));
+        if (bundle.getString("Mode").equals("ShowDetail")) {
+            mExpireDate.setText(bundle.getString("TaskExpire"));
+
+        }
+
     }
 
     private void initTabView() {
@@ -154,7 +161,13 @@ public class DetailTask extends FragmentActivity {
                 UserManagement.getInstance().addTask(tempTask, uploadTaskSubscriber);
             }
         });
-    }
 
+        mBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
 
 }
