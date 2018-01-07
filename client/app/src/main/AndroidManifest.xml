@@ -30,17 +30,17 @@
 
 
         <!-- TODO:Kingsley's MacBook -->
-        <!-- <meta-data -->
-        <!-- android:name="com.amap.api.v2.apikey" -->
-        <!-- android:value="c9288e0782954e3bcdd834252ae0bada" /> -->
+         <meta-data
+         android:name="com.amap.api.v2.apikey"
+         android:value="c9288e0782954e3bcdd834252ae0bada" />
 
 
         <!-- TODO:Weimumu -->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="b98755fb7439231ef0d5e42f3bf8f53e" />
+        <!--<meta-data-->
+            <!--android:name="com.amap.api.v2.apikey"-->
+            <!--android:value="b98755fb7439231ef0d5e42f3bf8f53e" />-->
 
-        <activity android:name=".SigninSignup">
+        <activity android:name=".SigninSignup" android:launchMode="singleTask" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

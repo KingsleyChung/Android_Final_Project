@@ -72,17 +72,17 @@ public class SigninSignup extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_signup);
-
-        mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        mEditor = mSharedPreferences.edit();
-        initDir();
-        initStatus();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        getIntent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         initPermissions();
+        mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+        initDir();
+        initStatus();
     }
 
     private void initPermissions() {
@@ -101,6 +101,12 @@ public class SigninSignup extends Activity {
     }
 
     private void initStatus() {
+
+        if (getIntent().getExtras() != null)
+            if (getIntent().getExtras().containsKey("isLogout") && getIntent().getExtras().getBoolean("isLogout")) {
+                mEditor.clear();
+                mEditor.commit();
+            }
         initView();
         if (mSharedPreferences.getString("username", null) != null && mSharedPreferences.getString("password", null) != null) {
             login(mSharedPreferences.getString("username", null), mSharedPreferences.getString("password", null));

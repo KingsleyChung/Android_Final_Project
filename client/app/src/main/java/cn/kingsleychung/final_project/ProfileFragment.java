@@ -1,5 +1,6 @@
 package cn.kingsleychung.final_project;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -46,7 +47,12 @@ public class ProfileFragment extends Fragment{
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(getActivity(), SigninSignup.class);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("isLogout", true);
+                intent.putExtras(bundle);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
         return ProfileView;
