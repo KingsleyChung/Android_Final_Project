@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout map, task, profile, setting;
     private View guillotineMenu;
     private ProfileFragment profileFragment;
-
+    private HighFuncFragment highFuncFragment;
 
     //服务
     private IBinder mBinder;
@@ -146,6 +146,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 closeMenu.callOnClick();
                 break;
             case R.id.setting_group:
+                highFuncFragment = new HighFuncFragment();
+                transaction.replace(R.id.content_fragment, highFuncFragment);
+                closeMenu.callOnClick();
                 selectedFragment = 3;
                 break;
         }
