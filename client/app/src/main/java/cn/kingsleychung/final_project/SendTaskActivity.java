@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,17 @@ public class SendTaskActivity extends Fragment {
                 Log.d("d", "3");
                 resultTask = transform(tasks);
                 taskListAdapter = new TaskListAdapter(resultTask);
+                taskListAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                    Log.v("debug", "click");
+                    }
+
+                    @Override
+                    public void OnLongItemClick(View view, int position) {
+                    Log.v("debug", "longclick");
+                    }
+                });
                 for(int i = 0; i < resultTask.size(); i++) {
                     final int index = i;
                     UserManagement.getInstance().getPhoto(tasks.get(i).getPhoto(), new Subscriber<Bitmap>() {
