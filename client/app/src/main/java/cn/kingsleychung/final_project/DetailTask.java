@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
-import com.amap.api.maps2d.model.LatLng;
 import com.flyco.tablayout.SlidingTabLayout;
 
 import java.util.ArrayList;
@@ -123,7 +122,11 @@ public class DetailTask extends FragmentActivity {
                     @Override
                     public void onError(Throwable e) {
                         System.out.println(e);
+
+                        System.out.println(getIntent().getExtras().getDouble("StartLatitude"));
+                        System.out.println(getIntent().getExtras().getDouble("StartLongitude"));
                     }
+
 
                     @Override
                     public void onNext(UserClass userClass) {
@@ -131,6 +134,9 @@ public class DetailTask extends FragmentActivity {
                         Toast.makeText(DetailTask.this, "Upload successfully", Toast.LENGTH_SHORT).show();
                     }
                 });
+
+                System.out.println(getIntent().getExtras().getDouble("StartLatitude"));
+                System.out.println(getIntent().getExtras().getDouble("StartLongitude"));
                 Task tempTask = new Task(UserManagement.getInstance().getUser().getUserName(),
                         UserManagement.getInstance().getUser().getUserId(),
                         mTitle.getText().toString(),
@@ -138,7 +144,7 @@ public class DetailTask extends FragmentActivity {
                         "-1", "-1",
                         1000, false, new ArrayList<String>(),
                         new ArrayList<String>(),
-                        new double[] { getIntent().getExtras().getDouble("Latitude"), getIntent().getExtras().getDouble("Longitude") },
+                        new double[] { getIntent().getExtras().getDouble("StartLongitude"), getIntent().getExtras().getDouble("StartLatitude") },
                         new double[] {},
                         mExpireDate.getText().toString() + " 00:00:00");
 //                Task(String userName, String userId, String title, String content, String taskPosName,
