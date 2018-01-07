@@ -115,7 +115,7 @@ public interface APIService {
 
     @Multipart
     @POST("api/user/upload")
-    Observable<UserClass> uploadPhotoPost(@Part("photo\"; filename=\"test.png\"") RequestBody img );
+    Observable<UserClass> uploadPhotoPost(@Part("photo\"; filename=\"test.jpg\"") RequestBody img );
 
     @GET("/public/image/{photoName}")
     Observable<ResponseBody> downloadPicFromNet(@Path("photoName") String photoName);

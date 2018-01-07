@@ -23,7 +23,7 @@ import rx.Subscriber;
  * Created by weimumu on 2018-1-1.
  */
 
-public class receiveTaskActivity extends Fragment {
+public class ReceiveTaskActivity extends Fragment {
     private View TaskView;
     private List<ListTask> resultTask;
     private RecyclerView receiveTaskView;

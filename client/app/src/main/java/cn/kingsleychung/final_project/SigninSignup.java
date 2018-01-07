@@ -194,22 +194,22 @@ public class SigninSignup extends Activity {
                         @Override
                         public void onError(Throwable e) {
                             Toast.makeText(SigninSignup.this, R.string.networkerror,Toast.LENGTH_SHORT).show();
+                            System.out.println(e);
                             stopWaiting();
                         }
 
                         @Override
                         public void onNext(UserClass user) {
-                            Toast.makeText(SigninSignup.this, "chishide",Toast.LENGTH_SHORT).show();
                             //这里是将返回的json数据用来更新用户的本地信息，并不一定都使用，如getUserInformation返回的不是用户本人信息，则不可用。
                             UserManagement.getInstance().storeUser(user);
                             if (user.getSuccess()) {
-                                //login(user.getUserName(), user.getPassword());
+                                login(user.getUserName(), user.getPassword());
                             } else {
                                 Toast.makeText(SigninSignup.this, user.getMessage(),Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-                    UserClass newUser = new UserClass(inputUsername, "-1", inputPassword, inputPhoneNo, inputEmail, "-1", "-1","-1");
+                    UserClass newUser = new UserClass(inputUsername, "-1", inputPassword, inputPhoneNo, inputEmail, "-1", "-1",mIconTempName);
                     waiting();
                     mUserManagement.register(newUser, registerSubscriber);
                 } else {
@@ -498,7 +498,7 @@ public class SigninSignup extends Activity {
                     Bitmap bitmap = data.getParcelableExtra("data");
                     saveBitmap(bitmap);
                     this.mIcon.setImageBitmap(bitmap);
-                    //uploadIcon();
+                    uploadIcon();
                 }
                 break;
             default:
@@ -550,7 +550,7 @@ public class SigninSignup extends Activity {
         }
         try {
             FileOutputStream out = new FileOutputStream(mUploadPic);
-            bm.compress(Bitmap.CompressFormat.PNG, 90, out);
+            bm.compress(Bitmap.CompressFormat.PNG, 10, out);
             out.flush();
             out.close();
         } catch (FileNotFoundException e) {
@@ -573,6 +573,7 @@ public class SigninSignup extends Activity {
             @Override
             public void onError(Throwable e) {
                 mIconUploadStatus = false;
+                System.out.println(e);
                 Toast.makeText(SigninSignup.this, "Icon upload failed", Toast.LENGTH_SHORT).show();
             }
 

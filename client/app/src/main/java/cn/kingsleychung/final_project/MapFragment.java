@@ -72,7 +72,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         initDrawer();
         return mapView;
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -97,7 +96,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         mMapView.onSaveInstanceState(outState);
     }
-
     @Override
     public void onMyLocationChange(Location location) {
         // 定位回调监听
