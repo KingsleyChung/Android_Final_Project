@@ -1,12 +1,14 @@
 package cn.kingsleychung.final_project;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +40,10 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.mancj.slideup.SlideUp;
 import com.mancj.slideup.SlideUpBuilder;
 
+import java.util.List;
+
 import cn.kingsleychung.final_project.User.UserManagement;
+import rx.Subscriber;
 
 /**
  * Created by Kings on 2017/12/15.
@@ -46,21 +51,23 @@ import cn.kingsleychung.final_project.User.UserManagement;
 
 public class MapFragment extends Fragment implements AMap.OnMyLocationChangeListener, GeocodeSearch.OnGeocodeSearchListener {
 
-    View mapView, mDrawer, mDrawerHolder;
-    ConstraintLayout mInstructionBar;
-    TextView mInstruction, mStartText, mEndText;
-    EditText mTitle, mContent;
-    AMap mAMap;
-    MapView mMapView;
-    MyLocationStyle myLocationStyle;
-    UiSettings mUiSettings;
-    ImageView mSubmit, mCancel, mStart, mEnd, mInstructionSubmit, mInstructionCancel;
-    FrameLayout mDim;
-    SlideUp mSlideUp;
-    LatLng mStartLocation, mEndLocation;
-    Marker mSelectedLocationMarker, mStartMarker, mEndMarker;
-    GeocodeSearch geocoderSearch;
-    int selectingMode;
+    private View mapView, mDrawer, mDrawerHolder;
+    private ConstraintLayout mInstructionBar;
+    private TextView mInstruction, mStartText, mEndText;
+    private EditText mTitle, mContent;
+    private AMap mAMap;
+    private MapView mMapView;
+    private MyLocationStyle myLocationStyle;
+    private UiSettings mUiSettings;
+    private ImageView mSubmit, mCancel, mStart, mEnd, mInstructionSubmit, mInstructionCancel, mPinDetail, mPinCancel;
+    private CardView mPinCard;
+    private FrameLayout mDim;
+    private SlideUp mSlideUp;
+    private LatLng mStartLocation, mEndLocation;
+    private Marker mSelectedLocationMarker, mStartMarker, mEndMarker;
+    private GeocodeSearch geocoderSearch;
+    private int selectingMode, selectedTaskPin;
+    private List<Task> nearTasks;
 
     @Nullable
     @Override
@@ -73,6 +80,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
 
         initMap();
         initDrawer();
+        initClickListener();
         return mapView;
     }
     @Override
@@ -104,6 +112,29 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         // 定位回调监听
         if(location != null) {
             UserManagement.getInstance().getUser().setLocation(new double[] { location.getLongitude(), location.getLatitude() });
+
+            Subscriber<List<Task>> getNearTaskSubscriber = (new Subscriber<List<Task>>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    System.out.println(e);
+                }
+
+                @Override
+                public void onNext(List<Task> tasks) {
+                    nearTasks = tasks;
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println("Task: " + tasks.get(i).getTitle());
+                        mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[1], tasks.get(i).getTaskPosLoc()[0])).snippet(i + ""));
+                    }
+                }
+            });
+            UserManagement.getInstance().getNearTask(getNearTaskSubscriber);
+
             Log.e("amap", "onMyLocationChange 定位成功， lat: " + location.getLatitude() + " lon: " + location.getLongitude());
             Bundle bundle = location.getExtras();
             if(bundle != null) {
@@ -148,32 +179,17 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         geocoderSearch = new GeocodeSearch(getContext());
         geocoderSearch.setOnGeocodeSearchListener(this);
 
-//        Subscriber<List<Task>> getNearTaskSubscriber = (new Subscriber<List<Task>>() {
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                System.out.println(e);
-//            }
-//
-//            @Override
-//            public void onNext(List<Task> tasks) {
-//                for (int i = 0; i < tasks.size(); i++) {
-//                    mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[1], tasks.get(i).getTaskPosLoc()[0])));
-//                }
-//            }
-//        });
-//        UserManagement.getInstance().getNearTask(getNearTaskSubscriber);
+        mPinCard = mapView.findViewById(R.id.map_pin_info);
+        mPinDetail = mapView.findViewById(R.id.map_pin_detail);
+        mPinCancel = mapView.findViewById(R.id.map_pin_cancel);
 
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                marker.showInfoWindow();
                 System.out.println("Marker has been clicked.");
-                return  true;
+                selectedTaskPin = Integer.parseInt(marker.getSnippet());
+                showInfoCard();
+                return true;
             }
         });
 
@@ -189,7 +205,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
                 LatLng center = cameraPosition.target;
-                System.out.println(center.latitude + "   " + center.longitude);
             }
         });
     }
@@ -262,16 +277,14 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                 mSlideUp.show();
             }
         });
-
-        initDrawerClickListener();
     }
 
-    private void initDrawerClickListener() {
+    private void initClickListener() {
         mSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checkBriefTask()) {
-                    showDetailTaskActivity();
+                    showDetailActivity(null);
                 }
             }
         });
@@ -315,6 +328,20 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                     mSelectedLocationMarker.destroy();
                 }
                 exitSelectLocation();
+            }
+        });
+
+        mPinDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDetailActivity(nearTasks.get(selectedTaskPin));
+            }
+        });
+
+        mPinCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPinCard.setVisibility(View.GONE);
             }
         });
     }
@@ -379,20 +406,70 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mContent.setText("");
     }
 
-    private void showDetailTaskActivity() {
+    private void showInfoCard() {
+        Task selectedTask = nearTasks.get(selectedTaskPin);
+
+        TextView title = mapView.findViewById(R.id.map_pin_title),
+                name = mapView.findViewById(R.id.map_pin_name),
+//                phone = mapView.findViewById(R.id.map_pin_phone),
+                content = mapView.findViewById(R.id.map_pin_content),
+//                postDate = mapView.findViewById(R.id.map_pin_post_date),
+                expireDate = mapView.findViewById(R.id.map_pin_expire_date);
+        final ImageView icon = mapView.findViewById(R.id.map_pin_icon);
+        title.setText(selectedTask.getTitle());
+        name.setText(selectedTask.getUserName());
+        content.setText(selectedTask.getContent());
+        expireDate.setText(selectedTask.getDate());
+        Subscriber<Bitmap> getIconSubscriber = (new Subscriber<Bitmap>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println(e);
+            }
+
+            @Override
+            public void onNext(Bitmap bitmap) {
+                icon.setImageBitmap(bitmap);
+            }
+        });
+        UserManagement.getInstance().getPhoto(selectedTask.getPhoto(), getIconSubscriber);
+        mPinCard.setVisibility(View.VISIBLE);
+    }
+
+    private void showDetailActivity(Task sendTask) {
         Intent intent = new Intent(getActivity(), DetailTask.class);
         Bundle bundle = new Bundle();
-        bundle.putString("TaskTitle", mTitle.getText().toString());
-        bundle.putDouble("StartLatitude", mStartLocation.latitude);
-        bundle.putDouble("StartLongitude", mStartLocation.longitude);
-        if (mEndLocation != null) {
-            bundle.putBoolean("EndStatus", true);
-            bundle.putDouble("EndLatitude", mEndLocation.latitude);
-            bundle.putDouble("EndLongitude", mEndLocation.longitude);
-        } else {
-            bundle.putBoolean("EndStatus", true);
+        if (sendTask == null) {
+            bundle.putString("Mode", "AddTask");
+            bundle.putString("TaskTitle", mTitle.getText().toString());
+            bundle.putDouble("StartLatitude", mStartLocation.latitude);
+            bundle.putDouble("StartLongitude", mStartLocation.longitude);
+            if (mEndLocation != null) {
+                bundle.putBoolean("EndStatus", true);
+                bundle.putDouble("EndLatitude", mEndLocation.latitude);
+                bundle.putDouble("EndLongitude", mEndLocation.longitude);
+            } else {
+                bundle.putBoolean("EndStatus", true);
+            }
+            bundle.putString("TaskContent", mContent.getText().toString());
+        } else if (sendTask != null) {
+            bundle.putString("Mode", "ShowDetail");
+            bundle.putString("TaskTitle", sendTask.getTitle());
+            bundle.putString("TaskContent", sendTask.getContent());
+            bundle.putString("TaskExpire", sendTask.getDate());
+            bundle.putDouble("StartLatitude", sendTask.getTaskPosLoc()[1]);
+            bundle.putDouble("StartLogitude", sendTask.getTaskPosLoc()[0]);
+            if (sendTask.getTgPosLoc() != null) {
+                bundle.putDouble("EndLatitude", sendTask.getTgPosLoc()[1]);
+                bundle.putDouble("EndLogtitude", sendTask.getTgPosLoc()[0]);
+            }
+            bundle.putString("AcceptUser", sendTask.getAcUser());
+            bundle.putBoolean("Kind", sendTask.getKind());
         }
-        bundle.putString("TaskContent", mContent.getText().toString());
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -415,4 +492,5 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
 
     }
+
 }
