@@ -23,6 +23,7 @@ public class Task {
     private String srcUser;
     private List<String> tag;
     private List<String> desUser;
+    private String acUser;
     private String date;  //格式：2017-06-12 06:51:20
     private String photo;
 
@@ -109,6 +110,10 @@ public class Task {
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getAcUser() {
+        return acUser;
     }
 }
 
