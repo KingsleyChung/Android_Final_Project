@@ -125,19 +125,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FragmentTransaction transaction = fm.beginTransaction();
         switch (v.getId()) {
             case R.id.map_group:
-                if (mapFragment == null) mapFragment = new MapFragment();
+                //if (mapFragment != null && selectedFragment != 0) mapFragment.onDestroy();
+                mapFragment = new MapFragment();
                 transaction.replace(R.id.content_fragment, mapFragment);
                 selectedFragment = 0;
                 closeMenu.callOnClick();
                 break;
             case R.id.task_group:
-                if (taskFragment == null) taskFragment = new TaskFragment();
+                //if (taskFragment == null) taskFragment = new TaskFragment();
+                taskFragment = new TaskFragment();
                 transaction.replace(R.id.content_fragment, taskFragment);
                 selectedFragment = 1;
                 closeMenu.callOnClick();
                 break;
             case R.id.profile_group:
-                if (profileFragment == null) profileFragment = new ProfileFragment();
+                //if (profileFragment == null) profileFragment = new ProfileFragment();
+                profileFragment = new ProfileFragment();
                 transaction.replace(R.id.content_fragment, profileFragment);
                 selectedFragment = 2;
                 closeMenu.callOnClick();

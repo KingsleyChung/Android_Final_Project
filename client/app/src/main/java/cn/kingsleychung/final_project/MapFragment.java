@@ -42,6 +42,7 @@ import com.mancj.slideup.SlideUpBuilder;
 
 import java.util.List;
 
+import cn.kingsleychung.final_project.User.UserClass;
 import cn.kingsleychung.final_project.User.UserManagement;
 import rx.Subscriber;
 
@@ -59,7 +60,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     private MapView mMapView;
     private MyLocationStyle myLocationStyle;
     private UiSettings mUiSettings;
-    private ImageView mSubmit, mCancel, mStart, mEnd, mInstructionSubmit, mInstructionCancel, mPinDetail, mPinCancel;
+    private ImageView mSubmit, mCancel, mStart, mEnd, mInstructionSubmit, mInstructionCancel, mPinDetail, mPinCancel, mPinAccept;
     private CardView mPinCard;
     private FrameLayout mDim;
     private SlideUp mSlideUp;
@@ -182,6 +183,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mPinCard = mapView.findViewById(R.id.map_pin_info);
         mPinDetail = mapView.findViewById(R.id.map_pin_detail);
         mPinCancel = mapView.findViewById(R.id.map_pin_cancel);
+        mPinAccept = mapView.findViewById(R.id.map_pin_accept);
 
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -342,6 +344,29 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             @Override
             public void onClick(View v) {
                 mPinCard.setVisibility(View.GONE);
+            }
+        });
+
+        mPinAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Subscriber<UserClass> acceptTaskSubscriber = (new Subscriber<UserClass>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        System.out.println(e);
+                    }
+
+                    @Override
+                    public void onNext(UserClass userClass) {
+                        mPinCard.setVisibility(View.GONE);
+                        Toast.makeText(getActivity(), getString(R.string.accept_task_successfully), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                UserManagement.getInstance().acceptTask(nearTasks.get(selectedTaskPin).getTaskId(), acceptTaskSubscriber);
             }
         });
     }

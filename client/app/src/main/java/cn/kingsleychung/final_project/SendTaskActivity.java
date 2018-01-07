@@ -31,6 +31,7 @@ public class SendTaskActivity extends Fragment {
     private RecyclerView sendTaskView;
     private UserManagement userManagement;
     private TaskListAdapter taskListAdapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -93,6 +94,12 @@ public class SendTaskActivity extends Fragment {
             }
         });
         return TaskView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
     }
 
     private void showDetailActivity(int index) {
