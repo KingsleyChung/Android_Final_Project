@@ -1,6 +1,7 @@
 package cn.kingsleychung.final_project;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,6 +27,7 @@ import rx.Subscriber;
 public class ReceiveTaskActivity extends Fragment {
     private View TaskView;
     private List<ListTask> resultTask;
+    private List<Task> taskList;
     private RecyclerView receiveTaskView;
     private UserManagement userManagement;
     private TaskListAdapter taskListAdapter;
@@ -53,11 +55,13 @@ public class ReceiveTaskActivity extends Fragment {
             public void onNext(List<Task> tasks) {
                 Log.d("d", "6");
                 resultTask = transform(tasks);
+                taskList = tasks;
                 taskListAdapter = new TaskListAdapter(resultTask);
                 taskListAdapter.setOnItemClickListener(new TaskListAdapter.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
                         Log.v("debug", "click");
+                        showDetailActivity(position);
                     }
 
                     @Override
@@ -97,5 +101,25 @@ public class ReceiveTaskActivity extends Fragment {
             result.add(item);
         }
         return result;
+    }
+
+    private void showDetailActivity(int index) {
+        Intent intent = new Intent(getActivity(), DetailTask.class);
+        Bundle bundle = new Bundle();
+        Task sendTask = taskList.get(index);
+        bundle.putString("Mode", "ShowDetail");
+        bundle.putString("TaskTitle", sendTask.getTitle());
+        bundle.putString("TaskContent", sendTask.getContent());
+        bundle.putString("TaskExpire", sendTask.getDate());
+        bundle.putDouble("StartLatitude", sendTask.getTaskPosLoc()[1]);
+        bundle.putDouble("StartLogitude", sendTask.getTaskPosLoc()[0]);
+        if (sendTask.getTgPosLoc() != null) {
+            bundle.putDouble("EndLatitude", sendTask.getTgPosLoc()[1]);
+            bundle.putDouble("EndLogtitude", sendTask.getTgPosLoc()[0]);
+        }
+        bundle.putString("AcceptUser", sendTask.getAcUser());
+        bundle.putBoolean("Kind", sendTask.getKind());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }

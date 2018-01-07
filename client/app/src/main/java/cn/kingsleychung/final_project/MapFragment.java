@@ -134,7 +134,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                     }
                 }
             });
-            UserManagement.getInstance().getNearTask(getNearTaskSubscriber);
+            if (selectingMode == 0) UserManagement.getInstance().getNearTask(getNearTaskSubscriber);
 
             Log.e("amap", "onMyLocationChange 定位成功， lat: " + location.getLatitude() + " lon: " + location.getLongitude());
             Bundle bundle = location.getExtras();
@@ -200,13 +200,22 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             public void onCameraChange(CameraPosition cameraPosition) {
                 if (mSelectedLocationMarker != null) {
                     LatLng center = cameraPosition.target;
+                    if (selectingMode == 1) mSelectedLocationMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_up)));
+                    else mSelectedLocationMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.end_pin_up)));
                     mSelectedLocationMarker.setPosition(center);
+                    if (selectingMode != 0) {
+                        List<Marker> markerList = mAMap.getMapScreenMarkers();
+                        for (int i = 0; i < markerList.size(); i++) {
+                            if (markerList.get(i).getSnippet() != null) markerList.get(i).setVisible(false);
+                        }
+                    }
                 }
             }
 
             @Override
             public void onCameraChangeFinish(CameraPosition cameraPosition) {
-                LatLng center = cameraPosition.target;
+                if (selectingMode == 1) mSelectedLocationMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down)));
+                else if (selectingMode == -1) mSelectedLocationMarker.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.end_pin_down)));
             }
         });
     }
@@ -303,7 +312,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             @Override
             public void onClick(View v) {
                 selectingMode = 1;
-                enterSelectLocation(getResources().getString(R.string.starting_point));
+                enterSelectLocation();
 
             }
         });
@@ -312,7 +321,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             @Override
             public void onClick(View v) {
                 selectingMode = -1;
-                enterSelectLocation(getResources().getString(R.string.destination));
+                enterSelectLocation();
             }
         });
 
@@ -371,16 +380,22 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         });
     }
 
-    private void enterSelectLocation(String point) {
+    private void enterSelectLocation() {
         mSlideUp.hide();
         mInstructionBar.setVisibility(View.VISIBLE);
-        mInstruction.setText(point);
-        if (point.equals(getString(R.string.starting_point)) && mStartMarker != null) {
-            mSelectedLocationMarker = mStartMarker;
-        } else if (point.equals(getString(R.string.destination)) && mEndMarker != null) {
-            mSelectedLocationMarker = mEndMarker;
-        } else {
-            mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down))));
+        List<Marker> markerList = mAMap.getMapScreenMarkers();
+        for (int i = 0; i < markerList.size(); i++) {
+            if (markerList.get(i).getSnippet() != null) markerList.get(i).setVisible(false);
+        }
+
+        if (selectingMode == 1) {
+            mInstruction.setText(getString(R.string.starting_point));
+            if (mStartMarker != null) mSelectedLocationMarker = mStartMarker;
+            else mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down))));
+        } else if (selectingMode == -1) {
+            mInstruction.setText(getString(R.string.destination));
+            if (mEndMarker != null) mSelectedLocationMarker = mEndMarker;
+            else mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.end_pin_down))));
         }
     }
 
@@ -390,17 +405,22 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         if (mSelectedLocationMarker != null) {
             if (selectingMode == 1) {
                 mStartLocation = mSelectedLocationMarker.getPosition();
-                mStartMarker = mAMap.addMarker(new MarkerOptions().position(mStartLocation));
+                mStartMarker = mAMap.addMarker(new MarkerOptions().position(mStartLocation).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down))));
                 RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mStartLocation.latitude, mStartLocation.longitude), 0, GeocodeSearch.AMAP);
                 geocoderSearch.getFromLocationAsyn(query);
             }
             else if (selectingMode == -1) {
                 mEndLocation = mSelectedLocationMarker.getPosition();
-                mEndMarker = mAMap.addMarker(new MarkerOptions().position(mEndLocation));
+                mEndMarker = mAMap.addMarker(new MarkerOptions().position(mEndLocation).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.end_pin_down))));
                 RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mEndLocation.latitude, mEndLocation.longitude), 0, GeocodeSearch.AMAP);
                 geocoderSearch.getFromLocationAsyn(query);
             }
             mSelectedLocationMarker.destroy();
+        }
+        selectingMode = 0;
+        List<Marker> markerList = mAMap.getMapScreenMarkers();
+        for (int i = 0; i < markerList.size(); i++) {
+            if (markerList.get(i).getSnippet() != null) markerList.get(i).setVisible(true);
         }
     }
 
