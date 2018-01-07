@@ -1,6 +1,7 @@
 package cn.kingsleychung.final_project;
 
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import cn.kingsleychung.final_project.Other.ListTask;
 import cn.kingsleychung.final_project.User.UserManagement;
 import rx.Subscriber;
 
@@ -22,9 +25,10 @@ import rx.Subscriber;
 
 public class sendTaskActicity extends Fragment {
     private View TaskView;
-    private List<Task> sendTask;
+    private List<ListTask> resultTask;
     private RecyclerView sendTaskView;
     private UserManagement userManagement;
+    private TaskListAdapter taskListAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,10 +52,39 @@ public class sendTaskActicity extends Fragment {
             @Override
             public void onNext(List<Task> tasks) {
                 Log.d("d", "3");
-                final TaskListAdapter taskListAdapter = new TaskListAdapter(tasks);
-                sendTaskView.setAdapter(taskListAdapter);
+                resultTask = transform(tasks);
+                taskListAdapter = new TaskListAdapter(resultTask);
+                for(int i = 0; i < resultTask.size(); i++) {
+                    final int index = i;
+                    UserManagement.getInstance().getPhoto(tasks.get(i).getPhoto(), new Subscriber<Bitmap>() {
+                        @Override
+                        public void onCompleted() {
+                            Log.d("debug", "14");
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("debug", "12");
+                        }
+
+                        @Override
+                        public void onNext(Bitmap bitmap) {
+                            resultTask.get(index).setImage(bitmap);
+                            sendTaskView.setAdapter(taskListAdapter);
+                        }
+                    });
+                }
             }
         });
         return TaskView;
+    }
+
+    private List<ListTask> transform(List<Task> tasks) {
+        List<ListTask> result = new ArrayList<>();
+        for(int i = 0; i < tasks.size(); i++) {
+            ListTask item = new ListTask(tasks.get(i).getUserName(), tasks.get(i).getTitle(), tasks.get(i).getDate(), tasks.get(i).getTaskPosName(), tasks.get(i).getAcUser(), null);
+            result.add(item);
+        }
+        return result;
     }
 }
