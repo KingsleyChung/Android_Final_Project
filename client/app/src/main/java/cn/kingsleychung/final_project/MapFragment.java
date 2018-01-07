@@ -1,6 +1,7 @@
 package cn.kingsleychung.final_project;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -36,6 +37,11 @@ import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
 import com.mancj.slideup.SlideUp;
 import com.mancj.slideup.SlideUpBuilder;
+
+import java.util.List;
+
+import cn.kingsleychung.final_project.User.UserManagement;
+import rx.Subscriber;
 
 /**
  * Created by Kings on 2017/12/15.
@@ -100,7 +106,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
     public void onMyLocationChange(Location location) {
         // 定位回调监听
         if(location != null) {
-
+            UserManagement.getInstance().getUser().setLocation(new double[] { location.getLatitude(), location.getLongitude() });
             Log.e("amap", "onMyLocationChange 定位成功， lat: " + location.getLatitude() + " lon: " + location.getLongitude());
             Bundle bundle = location.getExtras();
             if(bundle != null) {
@@ -145,10 +151,25 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         geocoderSearch = new GeocodeSearch(getContext());
         geocoderSearch.setOnGeocodeSearchListener(this);
 
-        //testing
-        LatLng latLng = new LatLng(23.058324,113.390167);
-        final Marker marker = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.048324,113.398167)).title("广州").snippet("DefaultMarker"));
-        final Marker marker1 = mAMap.addMarker(new MarkerOptions().position(new LatLng(23.058324,113.390167)).title("广州1").snippet("DefaultMarker"));
+        Subscriber<List<Task>> getNearTaskSubscriber = (new Subscriber<List<Task>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println(e);
+            }
+
+            @Override
+            public void onNext(List<Task> tasks) {
+                for (int i = 0; i < tasks.size(); i++) {
+                    mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[0], tasks.get(i).getTaskPosLoc()[1])));
+                }
+            }
+        });
+        UserManagement.getInstance().getNearTask(getNearTaskSubscriber);
 
         mAMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
@@ -310,7 +331,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         } else if (point.equals(getString(R.string.destination)) && mEndMarker != null) {
             mSelectedLocationMarker = mEndMarker;
         } else {
-            mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target));
+            mSelectedLocationMarker = mAMap.addMarker(new MarkerOptions().position(mAMap.getCameraPosition().target).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down))));
         }
     }
 
