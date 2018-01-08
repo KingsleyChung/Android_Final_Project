@@ -8,4 +8,6 @@
     <color name="guillotine_background_dark">#383547</color>
     <color name="selected_item_color">#30D1D5</color>
     <color name="dimBackground">#bf000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="red">#FB4134</color>
 </resources>

@@ -117,7 +117,6 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             Subscriber<List<Task>> getNearTaskSubscriber = (new Subscriber<List<Task>>() {
                 @Override
                 public void onCompleted() {
-
                 }
 
                 @Override
@@ -130,7 +129,13 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                     nearTasks = tasks;
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println("Task: " + tasks.get(i).getTitle());
-                        mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[1], tasks.get(i).getTaskPosLoc()[0])).snippet(i + ""));
+                        if (tasks.get(i).getTaskState() == 0)
+                            mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[1], tasks.get(i).getTaskPosLoc()[0]))
+                                    .snippet(i + "").icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.task_pin))));
+                        else if (tasks.get(i).getTaskState() == 1 && tasks.get(i).getAcUser().equals(UserManagement.getInstance().getUser().getUserName())) {
+                            mAMap.addMarker(new MarkerOptions().position(new LatLng(tasks.get(i).getTaskPosLoc()[1], tasks.get(i).getTaskPosLoc()[0]))
+                                    .snippet(i + "").icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.received_task_pin))));
+                        }
                     }
                 }
             });
@@ -295,6 +300,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             @Override
             public void onClick(View v) {
                 if (checkBriefTask()) {
+                    mSlideUp.hide();
                     showDetailActivity(null);
                 }
             }
@@ -345,6 +351,7 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         mPinDetail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mPinCard.setVisibility(View.GONE);
                 showDetailActivity(nearTasks.get(selectedTaskPin));
             }
         });
@@ -375,7 +382,12 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
                         Toast.makeText(getActivity(), getString(R.string.accept_task_successfully), Toast.LENGTH_SHORT).show();
                     }
                 });
-                UserManagement.getInstance().acceptTask(nearTasks.get(selectedTaskPin).getTaskId(), acceptTaskSubscriber);
+                if (nearTasks.get(selectedTaskPin).getTaskState() == 0 && !nearTasks.get(selectedTaskPin).getUserName().equals(UserManagement.getInstance().getUser().getUserName()))
+                    UserManagement.getInstance().acceptTask(nearTasks.get(selectedTaskPin).getTaskId(), acceptTaskSubscriber);
+                else if (nearTasks.get(selectedTaskPin).getTaskState() == 0)
+                    Toast.makeText(getContext(), getString(R.string.its_your_task), Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getContext(), getString(R.string.already_accepted), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -406,18 +418,21 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             if (selectingMode == 1) {
                 mStartLocation = mSelectedLocationMarker.getPosition();
                 mStartMarker = mAMap.addMarker(new MarkerOptions().position(mStartLocation).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.start_pin_down))));
-                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mStartLocation.latitude, mStartLocation.longitude), 0, GeocodeSearch.AMAP);
-                geocoderSearch.getFromLocationAsyn(query);
+                if (mStartLocation != null) {
+                    RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mStartLocation.latitude, mStartLocation.longitude), 0, GeocodeSearch.AMAP);
+                    geocoderSearch.getFromLocationAsyn(query);
+                }
             }
             else if (selectingMode == -1) {
                 mEndLocation = mSelectedLocationMarker.getPosition();
                 mEndMarker = mAMap.addMarker(new MarkerOptions().position(mEndLocation).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.end_pin_down))));
-                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mEndLocation.latitude, mEndLocation.longitude), 0, GeocodeSearch.AMAP);
-                geocoderSearch.getFromLocationAsyn(query);
+                if (mEndLocation != null) {
+                    RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(mEndLocation.latitude, mEndLocation.longitude), 0, GeocodeSearch.AMAP);
+                    geocoderSearch.getFromLocationAsyn(query);
+                }
             }
             mSelectedLocationMarker.destroy();
         }
-        selectingMode = 0;
         List<Marker> markerList = mAMap.getMapScreenMarkers();
         for (int i = 0; i < markerList.size(); i++) {
             if (markerList.get(i).getSnippet() != null) markerList.get(i).setVisible(true);
@@ -491,31 +506,41 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
         if (sendTask == null) {
             bundle.putString("Mode", "AddTask");
             bundle.putString("TaskTitle", mTitle.getText().toString());
+            bundle.putString("Username", UserManagement.getInstance().getUser().getUserName());
             bundle.putDouble("StartLatitude", mStartLocation.latitude);
             bundle.putDouble("StartLongitude", mStartLocation.longitude);
+            bundle.putString("StartLocationText", mStartText.getText().toString());
+            bundle.putString("EndLocationText", "");
             if (mEndLocation != null) {
                 bundle.putBoolean("EndStatus", true);
                 bundle.putDouble("EndLatitude", mEndLocation.latitude);
                 bundle.putDouble("EndLongitude", mEndLocation.longitude);
+                bundle.putString("EndLocationText", mEndText.getText().toString());
             } else {
-                bundle.putBoolean("EndStatus", true);
+                bundle.putBoolean("EndStatus", false);
             }
             bundle.putString("TaskContent", mContent.getText().toString());
         } else if (sendTask != null) {
             bundle.putString("Mode", "ShowDetail");
             bundle.putString("TaskTitle", sendTask.getTitle());
+            bundle.putString("Username", sendTask.getUserName());
             bundle.putString("TaskContent", sendTask.getContent());
             bundle.putString("TaskExpire", sendTask.getDate());
+            bundle.putString("TaskID", sendTask.getTaskId());
             bundle.putDouble("StartLatitude", sendTask.getTaskPosLoc()[1]);
-            bundle.putDouble("StartLogitude", sendTask.getTaskPosLoc()[0]);
+            bundle.putDouble("StartLongitude", sendTask.getTaskPosLoc()[0]);
+            bundle.putString("StartLocationText", sendTask.getTaskPosName());
+            bundle.putString("EndLocationText", "");
             if (sendTask.getTgPosLoc() != null) {
                 bundle.putDouble("EndLatitude", sendTask.getTgPosLoc()[1]);
-                bundle.putDouble("EndLogtitude", sendTask.getTgPosLoc()[0]);
+                bundle.putDouble("EndLongtitude", sendTask.getTgPosLoc()[0]);
+                bundle.putString("EndLocationText", sendTask.getTgPosName());
             }
             bundle.putString("AcceptUser", sendTask.getAcUser());
             bundle.putBoolean("Kind", sendTask.getKind());
         }
         intent.putExtras(bundle);
+        clearDrawer();
         startActivity(intent);
     }
 
@@ -525,9 +550,11 @@ public class MapFragment extends Fragment implements AMap.OnMyLocationChangeList
             if (regeocodeResult != null && regeocodeResult.getRegeocodeAddress() != null
                     && regeocodeResult.getRegeocodeAddress().getFormatAddress() != null) {
                 if (selectingMode == 1)
-                    mStartText.setText(regeocodeResult.getRegeocodeAddress().getFormatAddress());
+//                    regeocodeResult.getRegeocodeAddress().getTownship() +
+                    mStartText.setText(regeocodeResult.getRegeocodeAddress().getNeighborhood());
                 else if (selectingMode == -1)
-                    mEndText.setText(regeocodeResult.getRegeocodeAddress().getFormatAddress());
+//                    regeocodeResult.getRegeocodeAddress().getTownship() +
+                    mEndText.setText(regeocodeResult.getRegeocodeAddress().getNeighborhood());
             }
         }
         selectingMode = 0;

@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -18,13 +20,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.yalantis.guillotine.animation.GuillotineAnimation;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private static final long RIPPLE_DURATION = 0;
@@ -38,12 +43,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View guillotineMenu;
     private ProfileFragment profileFragment;
     private HighFuncFragment highFuncFragment;
+    private ImageView mapImage, taskImage, advancedImage, settingImage;
+    private TextView mapText, taskText, advancedText, settingText;
 
     //服务
     private IBinder mBinder;
     private ServiceConnection mConnection;
 
-    private int selectedFragment;
+    private int selectedFragment = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +108,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         profile = guillotineMenu.findViewById(R.id.profile_group);
         setting = guillotineMenu.findViewById(R.id.setting_group);
         closeMenu = guillotineMenu.findViewById(R.id.guillotine_hamburger);
+
+        mapImage = guillotineMenu.findViewById(R.id.menu_icon_map);
+        taskImage = guillotineMenu.findViewById(R.id.menu_icon_tasks);
+        advancedImage = guillotineMenu.findViewById(R.id.menu_icon_advanced);
+        settingImage  = guillotineMenu.findViewById(R.id.menu_icon_settings);
+        mapText = guillotineMenu.findViewById(R.id.menu_text_map);
+        taskText = guillotineMenu.findViewById(R.id.menu_text_tasks);
+        advancedText = guillotineMenu.findViewById(R.id.menu_text_advanced);
+        settingText = guillotineMenu.findViewById(R.id.menu_text_settings);
+
+        setSelectedColor();
     }
 
     private void initFragment() {
@@ -139,21 +157,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 closeMenu.callOnClick();
                 break;
             case R.id.profile_group:
-                //if (profileFragment == null) profileFragment = new ProfileFragment();
-                profileFragment = new ProfileFragment();
-                transaction.replace(R.id.content_fragment, profileFragment);
-                selectedFragment = 2;
-                closeMenu.callOnClick();
-                break;
-            case R.id.setting_group:
                 highFuncFragment = new HighFuncFragment();
                 transaction.replace(R.id.content_fragment, highFuncFragment);
                 closeMenu.callOnClick();
+                selectedFragment = 2;
+                break;
+            case R.id.setting_group:
+                //if (profileFragment == null) profileFragment = new ProfileFragment();
+                profileFragment = new ProfileFragment();
+                transaction.replace(R.id.content_fragment, profileFragment);
                 selectedFragment = 3;
+                closeMenu.callOnClick();
                 break;
         }
-
         transaction.commit();
+        setSelectedColor();
+    }
+
+    private void setSelectedColor() {
+        mapImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.white)));
+        taskImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.white)));
+        advancedImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.white)));
+        settingImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.white)));
+        mapText.setTextColor(getColor(R.color.white));
+        taskText.setTextColor(getColor(R.color.white));
+        advancedText.setTextColor(getColor(R.color.white));
+        settingText.setTextColor(getColor(R.color.white));
+
+        if (selectedFragment == 0) {
+            mapImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.selected_item_color)));
+            mapText.setTextColor(getColor(R.color.selected_item_color));
+        } else if (selectedFragment == 1) {
+            taskImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.selected_item_color)));
+            taskText.setTextColor(getColor(R.color.selected_item_color));
+        } else if (selectedFragment == 2) {
+            advancedImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.selected_item_color)));
+            advancedText.setTextColor(getColor(R.color.selected_item_color));
+        } else if (selectedFragment == 3) {
+            settingImage.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(),R.color.selected_item_color)));
+            settingText.setTextColor(getColor(R.color.selected_item_color));
+        }
     }
 
     //for testing
@@ -223,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
+            mapFragment = new MapFragment();
             transaction.replace(R.id.content_fragment, mapFragment);
             transaction.commit();
             selectedFragment = 0;

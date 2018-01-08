@@ -22,10 +22,12 @@
         android:layout_marginTop="@dimen/guillotine_medium_margin">
 
         <ImageView
+            android:id="@+id/menu_icon_map"
             style="@style/ImageView.GuillotineItem"
-            android:src="@drawable/ic_profile" />
+            android:src="@drawable/ic_map_white_48pt_3x"/>
 
-        <cn.kingsleychung.final_project.Other.CanaroTextView
+        <TextView
+            android:id="@+id/menu_text_map"
             style="@style/TextView.GuillotineItem"
             android:text="@string/map" />
     </LinearLayout>
@@ -35,10 +37,12 @@
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
+            android:id="@+id/menu_icon_tasks"
             style="@style/ImageView.GuillotineItem"
-            android:src="@drawable/ic_feed" />
+            android:src="@drawable/ic_event_note_white_48pt_3x" />
 
-        <cn.kingsleychung.final_project.Other.CanaroTextView
+        <TextView
+            android:id="@+id/menu_text_tasks"
             style="@style/TextView.GuillotineItem"
             android:text="@string/task" />
     </LinearLayout>
@@ -48,11 +52,13 @@
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
+            android:id="@+id/menu_icon_advanced"
             style="@style/ImageView.GuillotineItem"
-            android:src="@drawable/ic_activity_active" />
+            android:src="@drawable/ic_settings_input_svideo_white_48pt_3x" />
 
-        <cn.kingsleychung.final_project.Other.CanaroTextView
-            style="@style/TextView.GuillotineItem.Selected"
+        <TextView
+            android:id="@+id/menu_text_advanced"
+            style="@style/TextView.GuillotineItem"
             android:text="@string/profile" />
     </LinearLayout>
 
@@ -65,10 +71,12 @@
         style="@style/LinearLayout.GuillotineItem">
 
         <ImageView
+            android:id="@+id/menu_icon_settings"
             style="@style/ImageView.GuillotineItem"
-            android:src="@drawable/ic_settings" />
+            android:src="@drawable/ic_settings_white_48pt_3x" />
 
-        <cn.kingsleychung.final_project.Other.CanaroTextView
+        <TextView
+            android:id="@+id/menu_text_settings"
             style="@style/TextView.GuillotineItem"
             android:text="@string/settings" />
     </LinearLayout>

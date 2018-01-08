@@ -72,6 +72,11 @@ public class SigninSignup extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_signup);
+
+        mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
+        mEditor = mSharedPreferences.edit();
+        initDir();
+        initStatus();
     }
 
     @Override
@@ -79,10 +84,6 @@ public class SigninSignup extends Activity {
         super.onResume();
         getIntent().setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         initPermissions();
-        mSharedPreferences = this.getSharedPreferences("UserInfo", Context.MODE_PRIVATE);
-        mEditor = mSharedPreferences.edit();
-        initDir();
-        initStatus();
     }
 
     private void initPermissions() {
@@ -108,11 +109,10 @@ public class SigninSignup extends Activity {
                 mEditor.commit();
             }
         initView();
+        initClickListener();
+        initInputListener();
         if (mSharedPreferences.getString("username", null) != null && mSharedPreferences.getString("password", null) != null) {
             login(mSharedPreferences.getString("username", null), mSharedPreferences.getString("password", null));
-        } else {
-            initClickListener();
-            initInputListener();
         }
     }
 
@@ -587,7 +587,6 @@ public class SigninSignup extends Activity {
             public void onNext(UserClass userClass) {
                 mIconUploadStatus = true;
                 mIconTempName = userClass.getIconName();
-                Toast.makeText(SigninSignup.this, "Icon upload succeed.Name: " + mIconTempName , Toast.LENGTH_SHORT).show();
             }
         });
         UserManagement.getInstance().uploadPhoto(mUploadPic.getPath().toString(), uploadIconSubscriber);

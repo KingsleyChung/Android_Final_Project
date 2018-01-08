@@ -47,6 +47,7 @@ public class ReceiveTaskActivity extends Fragment {
             @Override
             public void onCompleted() {
                 Log.d("d", "4");
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -89,7 +90,7 @@ public class ReceiveTaskActivity extends Fragment {
                         public void onNext(Bitmap bitmap) {
                             resultTask.get(index).setImage(bitmap);
                             receiveTaskView.setAdapter(taskListAdapter);
-                            progressBar.setVisibility(View.GONE);
+
                         }
                     });
                 }
@@ -113,13 +114,16 @@ public class ReceiveTaskActivity extends Fragment {
         Task sendTask = taskList.get(index);
         bundle.putString("Mode", "ShowDetail");
         bundle.putString("TaskTitle", sendTask.getTitle());
+        bundle.putString("Username", sendTask.getUserName());
         bundle.putString("TaskContent", sendTask.getContent());
         bundle.putString("TaskExpire", sendTask.getDate());
         bundle.putDouble("StartLatitude", sendTask.getTaskPosLoc()[1]);
         bundle.putDouble("StartLogitude", sendTask.getTaskPosLoc()[0]);
+        bundle.putString("StartLocationText", sendTask.getTaskPosName());
         if (sendTask.getTgPosLoc() != null) {
             bundle.putDouble("EndLatitude", sendTask.getTgPosLoc()[1]);
             bundle.putDouble("EndLogtitude", sendTask.getTgPosLoc()[0]);
+            bundle.putString("EndLocationText", sendTask.getTgPosName());
         }
         bundle.putString("AcceptUser", sendTask.getAcUser());
         bundle.putBoolean("Kind", sendTask.getKind());

@@ -129,8 +129,7 @@
             android:id="@+id/signup_username_input"
             android:lines="1"
             android:singleLine="true"
-            android:paddingTop="2dp"
-            android:text="1429"/>
+            android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
 
@@ -154,8 +153,7 @@
             android:lines="1"
             android:singleLine="true"
             android:inputType="textPassword"
-            android:paddingTop="2dp"
-            android:text="1429"/>
+            android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -178,8 +176,7 @@
             android:lines="1"
             android:singleLine="true"
             android:inputType="textPassword"
-            android:paddingTop="2dp"
-            android:text="1429"/>
+            android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -202,8 +199,7 @@
             android:lines="1"
             android:singleLine="true"
             android:inputType="number"
-            android:paddingTop="2dp"
-            android:text="15521074008"/>
+            android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -225,8 +221,7 @@
             android:id="@+id/signup_email_input"
             android:lines="1"
             android:singleLine="true"
-            android:paddingTop="2dp"
-            android:text="330555029@qq.com"/>
+            android:paddingTop="2dp"/>
     </android.support.design.widget.TextInputLayout>
 
 
